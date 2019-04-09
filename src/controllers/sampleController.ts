@@ -1,11 +1,11 @@
 import express from 'express';
 
-let router = express.Router();
+const router = express.Router();
 
-router.get('/', function (req, res) {
+router.get('/', (_: express.Request, res: express.Response) => {
   res.send({
     data: 'sample',
-  })
+  });
 });
 
 export default router;
