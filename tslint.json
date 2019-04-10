@@ -4,7 +4,7 @@
   "jsRules": {},
   "rules": {
     "indent": [true, "spaces", 2],
-    "semicolon": true,
+    "semicolon": [true, "always"],
     "max-line-length": [true, 130],
     "quotemark": [true, "single"]
   },
