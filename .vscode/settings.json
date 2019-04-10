@@ -1,0 +1,15 @@
+{
+    "editor.tabSize": 2,
+    "files.autoSave": "off",
+    "tslint.enable": true,
+    "eslint.autoFixOnSave": true,
+    "tslint.autoFixOnSave": true,
+    "tslint.configFile": "./tslint.json",
+    "tslint.exclude": "**/node_modules/**/*",
+    "typescript.tsdk": "node_modules/typescript/lib",
+    "javascript.implicitProjectConfig.experimentalDecorators": true,
+    "editor.codeActionsOnSave": {
+        "source.fixAll": true,
+        "source.organizeImports": true
+    }
+}
