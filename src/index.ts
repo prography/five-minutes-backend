@@ -1,14 +1,8 @@
-import express from 'express';
-import controllers from './controllers';
+import app from './app';
 
-const app: express.Application = express();
+const HOST: string = process.env.HOST || 'localhost';
+const PORT: number = Number(process.env.PORT) || 3000;
 
-app.get('/', (req: express.Request, res: express.Response) => {
-  res.send('Hello World!');
-});
-
-app.use('/api', controllers);
-
-app.listen(3000, () => {
-  console.log('Example app listening on port 3000!');
+app.listen(PORT, HOST, () => {
+  console.log('Server is listening on port 3000!');
 });
