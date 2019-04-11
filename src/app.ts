@@ -6,7 +6,7 @@ const app: express.Application = express();
 // TODO: Sentry 요청 초기화 코드 추가
 
 // api 경로 연결
-app.use('/', routes);
+app.use(routes);
 
 // 없는 경로의 경우 404 에러 페이지
 app.use('*', (_: express.Request, res: express.Response) => {
