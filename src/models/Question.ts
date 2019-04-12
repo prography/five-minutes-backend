@@ -1,11 +1,12 @@
 import { Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { Base } from './Base';
 import { Comment } from './Comment';
 import { QuestionLike } from './QuestionLike';
 import { QuestionTag } from './QuestionTag';
 import { User } from './User';
 
 @Entity()
-export class Question {
+export class Question extends Base {
   @PrimaryGeneratedColumn()
   id!: number;
   @Column()

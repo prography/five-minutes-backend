@@ -1,9 +1,10 @@
 import { Column, Entity, ManyToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { Base } from './Base';
 import { QuestionTag } from './QuestionTag';
 import { UserTag } from './UserTag';
 
 @Entity()
-export class Tag {
+export class Tag extends Base {
   @PrimaryGeneratedColumn()
   id!: number;
   @Column()
