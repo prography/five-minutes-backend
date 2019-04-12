@@ -1,3 +1,4 @@
+import { DeleteResult } from 'typeorm';
 import { TagRepository } from '../repositories/TagRepository';
 
 export class TagService {
@@ -10,6 +11,8 @@ export class TagService {
 
   create() { }
 
-  delete() { }
+  delete(id: number): Promise<DeleteResult> {
+    return this.tagRepository.delete(id);
+  }
 
 }

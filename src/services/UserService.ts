@@ -1,3 +1,4 @@
+import { User } from '../models/User';
 import { UserRepository } from './../repositories/UserRepository';
 
 export class UserService {
@@ -10,7 +11,9 @@ export class UserService {
 
   create() { }
 
-  update() { }
+  update(id: number, user: Partial<User>) {
+    return this.userRepository.update(id, user);
+  }
 
   delete() { }
 
