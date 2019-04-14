@@ -25,7 +25,7 @@ export class QuestionController  {
     };
   }
 
-  @Get('/:id')
+  @Get('/:id/comments')
   getQuestionComments(@Param('id') id: number) {
     return {
       result: { id },
@@ -39,17 +39,17 @@ export class QuestionController  {
     };
   }
 
-  @Delete('/:id')
-  deleteQuestion(@Param('id') id: number) {
-    return {
-      result: `delete item number ${id}`,
-    };
-  }
-
   @Put('/:id')
   updateQuestion(@Param('id') id: number, @Body() question: Question) {
     return {
       result: { ...question, id },
+    };
+  }
+
+  @Delete('/:id')
+  deleteQuestion(@Param('id') id: number) {
+    return {
+      result: `delete item number ${id}`,
     };
   }
 
