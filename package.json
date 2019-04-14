@@ -16,6 +16,7 @@
     "lodash": "^4.17.11",
     "mysql": "^2.16.0",
     "pluralize": "^7.0.0",
+    "routing-controllers": "^0.7.7",
     "typeorm": "^0.2.16"
   },
   "devDependencies": {
