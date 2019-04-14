@@ -11,22 +11,46 @@ export class QuestionController  {
 
   @Get('/')
   getQuestions() {
-    return 'get all';
+    return {
+      result: {
+        items: [],
+      },
+    };
   }
 
   @Get('/:id')
   getQuestion(@Param('id') id: number) {
-    return `get item number ${id}`;
+    return {
+      result: { id },
+    };
+  }
+
+  @Get('/:id')
+  getQuestionComments(@Param('id') id: number) {
+    return {
+      result: { id },
+    };
+  }
+
+  @Put('/:id/like')
+  likeQuestion(@Param('id') id: number) {
+    return {
+      result: { id, like: true },
+    };
   }
 
   @Delete('/:id')
   deleteQuestion(@Param('id') id: number) {
-    return `delete item number ${id}`;
+    return {
+      result: `delete item number ${id}`,
+    };
   }
 
   @Put('/:id')
   updateQuestion(@Param('id') id: number, @Body() question: Question) {
-    return `update item number ${id} to ${question.toString()}`;
+    return {
+      result: { ...question, id },
+    };
   }
 
 }
