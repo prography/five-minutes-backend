@@ -13,7 +13,7 @@
       - controllers/: 서버 응답시 비즈니스 로직을 호출
       - models/: 데이터베이스 모델 정의
       - repositories/: 데이터베이스 접근 로직
-      - routes/: 앱 접근 url 정의
+      - middlewares/: 미들웨어 정의
       - services/: 비즈니스 로직 정의
       - utils/: util의 성격을 띄는 파일
       - tests/: 테스트 코드 정의(나중에 쓸 예정)
