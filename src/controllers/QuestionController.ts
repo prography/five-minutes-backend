@@ -1,24 +1,32 @@
-import { Request, Response } from 'express';
-import { QuestionService } from '../services/QuestionService';
+import { Body, Controller, Delete, Get, Param, Post, Put } from 'routing-controllers';
+import { Question } from '../models/Question';
 
+@Controller('/questions')
 export class QuestionController  {
-  create(_: Request, res: Response) {
-    res.send({
-      data: 'sample',
-    });
+
+  @Post('/')
+  create() {
+    return 'result';
   }
 
-  update(_: Request, res: Response) {
-    res.send({
-      data: 'sample',
-    });
+  @Get('/')
+  getQuestions() {
+    return 'get all';
   }
 
-  async get(req: Request, res: Response) {
-    const questionService = new QuestionService();
-    const sample = await questionService.getQuestion(Number(req.params.sample));
-    res.send({
-      result: sample,
-    });
+  @Get('/:id')
+  getQuestion(@Param('id') id: number) {
+    return `get item number ${id}`;
   }
+
+  @Delete('/:id')
+  deleteQuestion(@Param('id') id: number) {
+    return `delete item number ${id}`;
+  }
+
+  @Put('/:id')
+  updateQuestion(@Param('id') id: number, @Body() question: Question) {
+    return `update item number ${id} to ${question.toString()}`;
+  }
+
 }
