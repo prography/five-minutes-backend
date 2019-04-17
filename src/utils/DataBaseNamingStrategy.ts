@@ -2,9 +2,9 @@ import { plural } from 'pluralize';
 import { DefaultNamingStrategy } from 'typeorm';
 import { snakeCase } from 'typeorm/util/StringUtils';
 
-export default class NamingStrategy extends DefaultNamingStrategy {
+export default class DatabaseNamingStrategy extends DefaultNamingStrategy {
   tableName(targetName: string, userSpecifiedName: string | undefined): string {
-    return plural(snakeCase(targetName));
+    return plural(snakeCase(userSpecifiedName || targetName));
   }
 
   relationName(propertyName: string): string {
