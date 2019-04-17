@@ -1,6 +1,5 @@
-import { CreateDateColumn, Entity, UpdateDateColumn } from 'typeorm';
+import { CreateDateColumn, UpdateDateColumn } from 'typeorm';
 
-@Entity()
 export abstract class Base {
 
   @UpdateDateColumn()
