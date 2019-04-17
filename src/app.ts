@@ -14,6 +14,7 @@ useExpressServer(app, {
   // api route 연결
   controllers: [`${__dirname}/controllers/*.[tj]s`],
   middlewares: [`${__dirname}/middlewares/*.[tj]s`],
+  interceptors: [`${__dirname}/interceptors/*[tj]s`],
 });
 
 // TODO: Sentry 에러 코드 추가
@@ -25,4 +26,5 @@ app.use((err: any, _: express.Request, res: express.Response, ___: express.NextF
     res.status(err.httpCode || 500).send(err.message || 'something is wrong');
   }
 });
+
 export default app;
