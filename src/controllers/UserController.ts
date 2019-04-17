@@ -1,4 +1,5 @@
-import { Body, Controller, Delete, Get, Param, Post, Put } from 'routing-controllers';
+import { Body, Controller, Delete, Get, Param, Post, Put, UseInterceptor } from 'routing-controllers';
+import { PaginationInterceptor } from '../interceptors/PaginationInterceptor';
 import { User } from '../models/User';
 
 @Controller('/users')
@@ -10,6 +11,7 @@ export class UserController {
   }
 
   @Get('/')
+  @UseInterceptor(PaginationInterceptor)
   getUsers() {
     return {
       result: {
