@@ -87,8 +87,8 @@ export class QuestionService {
     return this.questionRepository.findById(id);
   }
 
-  async getQuestions(id: number): Promise<Question[]> {
-    const result = await this.questionRepository.find({ where: { id } });
+  async getQuestions(user: User, subject: string, content: string, code: string): Promise<[Question[], number]> {
+    const result = await this.questionRepository.findWithCount({ where: { user, subject, content, code } });
     return result;
   }
 
@@ -97,4 +97,7 @@ export class QuestionService {
     return result;
   }
 
+  getQuestionByUser(user : User): Promise<Question | undefined> {
+    return this.questionRepository.findOne({ where: { user } });
+  }
 }
