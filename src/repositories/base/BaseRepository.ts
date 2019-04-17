@@ -63,4 +63,20 @@ export abstract class BaseRepository<T> {
   async findWithCount(options: FindManyOptions<T>): Promise<[T[], number]> {
     return this.repository.findAndCount(options);
   }
+
+  // 갯수를 반환
+  async count(options: FindManyOptions<T>): Promise<number> {
+    return this.repository.count(options);
+  }
+
+  // id 배열로 검색
+  async findByIds(ids: number[], options?: FindManyOptions<T>) {
+    return this.repository.findByIds(ids, options);
+  }
+
+  // query 사용하기
+  async query(query: string, ...parameters: any[]) {
+    return this.repository.query(query, parameters);
+  }
+
 }
