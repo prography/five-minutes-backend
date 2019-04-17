@@ -1,4 +1,4 @@
-import { DeleteResult } from 'typeorm';
+import { DeleteResult, In } from 'typeorm';
 import { Question } from '../models/Question';
 import { QuestionLike } from '../models/QuestionLike';
 import { QuestionTag } from '../models/QuestionTag';
@@ -47,11 +47,12 @@ export class QuestionService {
   }
 
   async addTag(name: string, question: Question): Promise<QuestionTag | undefined> {
-    const tag = await this.tagRepository.findOne({ where:{ name } });
+    let tag = await this.tagRepository.findOne({ where:{ name } });
     if (!tag) {
       const newTag = new Tag();
       newTag.name = name;
       newTag.description = '아직 설명이 없습니다.';
+      tag = await this.tagRepository.create(newTag);
     }
     const isTagged = await this.questionTagRepository.findOne({ where: { name, question } });
     if (!!isTagged) throw Error('TAGGED_ALREADY');
@@ -87,14 +88,12 @@ export class QuestionService {
     return this.questionRepository.findById(id);
   }
 
-  async getQuestions(user: User, subject: string, content: string, code: string): Promise<[Question[], number]> {
-    const result = await this.questionRepository.findWithCount({ where: { user, subject, content, code } });
-    return result;
+  async getQuestions(take: number, skip: number): Promise<[Question[], number]> {
+    return await this.questionRepository.findWithCount({ skip, take });
   }
 
-  async getQuestionsByTags(tag: QuestionTag): Promise<[Question[], number]> {
-    const result = await this.questionRepository.findWithCount({ where: { tag } });
-    return result;
+  async getQuestionsByTags(tags: Tag[], take: number, skip: number): Promise<[Question[], number]> {
+    return await this.questionRepository.findWithCount({ take, skip, where: { 'tags.name': In(tags.map(tag => tag.name)) } });
   }
 
   getQuestionByUser(user : User): Promise<Question | undefined> {
