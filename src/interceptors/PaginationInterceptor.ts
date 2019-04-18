@@ -22,7 +22,7 @@ export class PaginationInterceptor implements InterceptorInterface {
       perPage: result.perPage,
       firstPage: this.createQuery(url, { ...baseQuery, page: 1 }),
       lastPage: this.createQuery(url, { ...baseQuery, page: lastPage }),
-      prevPage: page > 0 ? this.createQuery(url, { ...baseQuery, page: page - 1 }) : null,
+      prevPage: page > 1 ? this.createQuery(url, { ...baseQuery, page: page - 1 }) : null,
       nextPage: page < lastPage ? this.createQuery(url, { ...baseQuery, page: page + 1 }) : null,
       currentPage: this.createQuery(url, { ...baseQuery }),
       items: result.items,
