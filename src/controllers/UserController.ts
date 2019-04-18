@@ -14,31 +14,27 @@ export class UserController {
   @UseInterceptor(PaginationInterceptor)
   getUsers() {
     return {
-      result: {
-        items: [],
-      },
+      items: [],
+      page: 1,
+      perPage: 10,
+      totalCount: 100,
+      count: 10,
     };
   }
 
   @Get('/:id')
   getUser(@Param('id') id: number) {
-    return {
-      result: { id },
-    };
+    return { id };
   }
 
   @Put('/:id')
   updateUser(@Param('id') id: number, @Body() user: User) {
-    return {
-      result: { ...user, id },
-    };
+    return { ...user, id };
   }
 
   @Delete('/:id')
   deleteUser(@Param('id') id: number) {
-    return {
-      result: `delete item number ${id}`,
-    };
+    return `delete item number ${id}`;
   }
 
 }

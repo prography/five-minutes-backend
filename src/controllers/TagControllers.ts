@@ -9,9 +9,7 @@ export class TagController {
   @Post('/')
   @UseInterceptor(EntityInterceptor)
   create(@Body() tag: Tag) {
-    return {
-      result: tag,
-    };
+    return tag;
   }
 
   @Get('/')
@@ -19,6 +17,10 @@ export class TagController {
   getTags() {
     return {
       items: [],
+      page: 1,
+      perPage: 10,
+      totalCount: 100,
+      count: 10,
     };
   }
 

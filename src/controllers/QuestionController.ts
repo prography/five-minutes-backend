@@ -17,6 +17,10 @@ export class QuestionController  {
   getQuestions() {
     return {
       items: [],
+      page: 1,
+      perPage: 10,
+      totalCount: 100,
+      count: 10,
     };
   }
 

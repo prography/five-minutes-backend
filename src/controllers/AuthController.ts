@@ -7,9 +7,9 @@ export class AuthController {
 
   @Post('/sign-in')
   @UseInterceptor(EntityInterceptor)
-  signIn(@Body() information: { email: string, password: string }) {
+  signIn(@Body() user: { email: string, password: string }) {
     return {
-      information,
+      ...user,
       result: 'sign in successfully',
     };
   }
@@ -18,7 +18,7 @@ export class AuthController {
   @UseInterceptor(EntityInterceptor)
   signUp(@Body() user: User) {
     return {
-      user,
+      ...user,
       result: 'sign-up successfully',
     };
   }
