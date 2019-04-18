@@ -1,4 +1,4 @@
-import { DeleteResult } from 'typeorm';
+import { DeleteResult, FindConditions } from 'typeorm';
 import { User } from '../models/User';
 import { UserRepository } from './../repositories/UserRepository';
 
@@ -16,11 +16,8 @@ export class UserService {
     newUser.nickname = user.nickname;
     newUser.password = user.password;
     newUser.rank = user.rank;
-    newUser.verifiedAt = user.verifiedAt;
-    newUser.token = user.token;
     newUser.githubUrl = user.githubUrl;
-    newUser.image = user.image;
-    return this.userRepository.create(user);
+    return this.userRepository.create(newUser);
   }
 
   update(id: number, user: Partial<User>) {
@@ -31,8 +28,8 @@ export class UserService {
     return this.userRepository.delete(id);
   }
 
-  async getUsers(email: string, nickname: string, rank: string): Promise<[User[], number]> {
-    const result = await this.userRepository.findWithCount({ where: { email, nickname, rank } });
+  async getUsers(take: number, skip: number, where?: FindConditions<User>): Promise<[User[], number]> {
+    const result = await this.userRepository.findWithCount({ take, skip, where });
     return result;
   }
 
