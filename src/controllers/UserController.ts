@@ -1,4 +1,5 @@
-import { Body, Controller, Delete, Get, Param, Post, Put } from 'routing-controllers';
+import { Body, Controller, Delete, Get, Param, Post, Put, UseInterceptor } from 'routing-controllers';
+import { PaginationInterceptor } from '../interceptors/PaginationInterceptor';
 import { User } from '../models/User';
 
 @Controller('/users')
@@ -10,33 +11,30 @@ export class UserController {
   }
 
   @Get('/')
+  @UseInterceptor(PaginationInterceptor)
   getUsers() {
     return {
-      result: {
-        items: [],
-      },
+      items: [],
+      page: 1,
+      perPage: 10,
+      totalCount: 100,
+      count: 10,
     };
   }
 
   @Get('/:id')
   getUser(@Param('id') id: number) {
-    return {
-      result: { id },
-    };
+    return { id };
   }
 
   @Put('/:id')
   updateUser(@Param('id') id: number, @Body() user: User) {
-    return {
-      result: { ...user, id },
-    };
+    return { ...user, id };
   }
 
   @Delete('/:id')
   deleteUser(@Param('id') id: number) {
-    return {
-      result: `delete item number ${id}`,
-    };
+    return `delete item number ${id}`;
   }
 
 }

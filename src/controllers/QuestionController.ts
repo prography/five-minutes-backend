@@ -1,56 +1,57 @@
-import { Body, Controller, Delete, Get, Param, Post, Put } from 'routing-controllers';
+import { Body, Controller, Delete, Get, Param, Post, Put, UseInterceptor } from 'routing-controllers';
+import { EntityInterceptor } from '../interceptors/EntityInterceptor';
+import { PaginationInterceptor } from '../interceptors/PaginationInterceptor';
 import { Question } from '../models/Question';
 
 @Controller('/questions')
 export class QuestionController  {
 
   @Post('/')
+  @UseInterceptor(EntityInterceptor)
   create() {
     return 'result';
   }
 
   @Get('/')
+  @UseInterceptor(PaginationInterceptor)
   getQuestions() {
     return {
-      result: {
-        items: [],
-      },
+      items: [],
+      page: 1,
+      perPage: 10,
+      totalCount: 100,
+      count: 10,
     };
   }
 
   @Get('/:id')
+  @UseInterceptor(EntityInterceptor)
   getQuestion(@Param('id') id: number) {
-    return {
-      result: { id },
-    };
+    return { id };
   }
 
   @Get('/:id/comments')
+  @UseInterceptor(EntityInterceptor)
   getQuestionComments(@Param('id') id: number) {
-    return {
-      result: { id },
-    };
+    return { id };
   }
 
   @Put('/:id/like')
+  @UseInterceptor(EntityInterceptor)
   likeQuestion(@Param('id') id: number) {
-    return {
-      result: { id, like: true },
-    };
+    return { id, like: true };
   }
 
   @Put('/:id')
+  @UseInterceptor(EntityInterceptor)
   updateQuestion(@Param('id') id: number, @Body() question: Question) {
-    return {
-      result: { ...question, id },
-    };
+    return { ...question, id };
   }
 
   @Delete('/:id')
+  @UseInterceptor(EntityInterceptor)
   deleteQuestion(@Param('id') id: number) {
-    return {
-      result: `delete item number ${id}`,
-    };
+    return `delete item number ${id}`;
   }
 
 }
