@@ -1,9 +1,15 @@
+import { IsArray, IsString } from 'class-validator';
 import { User } from '../models/User';
 
-export interface QuestionCreateDto {
-  subject: string;
-  content: string;
-  code: string;
-  user: User;
-  tags: string[];
+export class QuestionCreateDto {
+  @IsString()
+  subject!: string;
+  @IsString()
+  content!: string;
+  @IsString()
+  code!: string;
+  @IsString()
+  user!: User;
+  @IsArray()
+  tags!: string[];
 }
