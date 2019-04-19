@@ -34,15 +34,15 @@ export class CommentService {
     return this.commentRepository.delete(id);
   }
 
-  async getCommentsByQuestion(question: Question): Promise<[Comment[], number]> {
-    return await this.commentRepository.findWithCount({ where: { question } });
+  getCommentsByQuestion(question: Question): Promise<[Comment[], number]> {
+    return this.commentRepository.findWithCount({ where: { question }, relations: ['user'] });
   }
-  async getLikedComments(user: User): Promise<[Comment[], number]> {
-    return await this.commentRepository.findWithCount({ where: { user } });
+  getLikedComments(user: User): Promise<[Comment[], number]> {
+    return this.commentRepository.findWithCount({ where: { user }, relations: ['user'] });
   }
 
-  async getLikedUsers(id: number): Promise<[CommentLike[], number]> {
-    return await this.commentLikeRepository.findWithCount({ where: { id } });
+  getLikedUsers(id: number): Promise<[CommentLike[], number]> {
+    return this.commentLikeRepository.findWithCount({ where: { id }, relations: ['user'] });
   }
 
   async likeComment(user: User, comment: Comment): Promise<CommentLike | DeleteResult | undefined> {
