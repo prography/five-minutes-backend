@@ -10,16 +10,20 @@ export class TagService {
     this.tagRepository = new TagRepository();
   }
 
-  create(tag: Tag): Promise<Tag> {
+  create(name : string, description: string): Promise<Tag> {
     const newTag = new Tag();
-    newTag.name = tag.name;
-    newTag.description = tag.description;
+    newTag.name = name;
+    newTag.description = description;
     return this.tagRepository.create(newTag);
   }
 
+  getTags(take: number, skip: number): Promise<[Tag[], number]> {
+    return this.tagRepository.findWithCount({ take, skip });
+  }
+
   // Tag 검색
-  getByName(name: string, take: number): Promise<[Tag[], number]> {
-    return this.tagRepository.findWithCount({ take, where: { name: Like(name) } });
+  getByName(name: string, take: number, skip: number): Promise<[Tag[], number]> {
+    return this.tagRepository.findWithCount({ take, skip, where: { name: Like(name) } });
   }
 
   // Tag 수정
