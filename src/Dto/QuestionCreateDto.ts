@@ -1,4 +1,5 @@
 import { IsArray, IsString } from 'class-validator';
+import { Tag } from '../models/Tag';
 import { User } from '../models/User';
 
 export class QuestionCreateDto {
@@ -11,5 +12,5 @@ export class QuestionCreateDto {
   @IsString()
   user!: User;
   @IsArray()
-  tags!: string[];
+  tags!: Tag[];
 }
