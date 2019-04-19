@@ -27,14 +27,14 @@ export class User extends Base {
   githubUrl!: string;
   @Column({ length: 200, nullable: true })
   image!: string;
-  @OneToMany(_ => Question, question => question.user)
+  @OneToMany(_ => Question, question => question.user, { cascade: true })
   questions!: Question[];
-  @OneToMany(_ => Comment, question => question.user)
+  @OneToMany(_ => Comment, question => question.user, { cascade: true })
   comments!: Comment[];
-  @OneToMany(_ => UserTag, userTag => userTag.user)
+  @OneToMany(_ => UserTag, userTag => userTag.user, { cascade: true })
   tags!: UserTag[];
-  @ManyToMany(_ => QuestionLike, questionLike => questionLike.user)
+  @ManyToMany(_ => QuestionLike, questionLike => questionLike.user, { cascade: true })
   likedQuestions!: QuestionLike[];
-  @ManyToMany(_ => CommentLike, commentLike => commentLike.user)
+  @ManyToMany(_ => CommentLike, commentLike => commentLike.user, { cascade: true })
   likedComments!: CommentLike[];
 }

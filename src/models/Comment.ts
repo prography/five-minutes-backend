@@ -16,6 +16,6 @@ export class Comment extends Base {
   user!: User;
   @Column()
   codeline!: number;
-  @OneToMany(_ => CommentLike, commentLike => commentLike.comment)
+  @OneToMany(_ => CommentLike, commentLike => commentLike.comment, { cascade: true })
   likedUsers!: CommentLike[];
 }

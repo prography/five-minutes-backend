@@ -17,10 +17,10 @@ export class Question extends Base {
   code!: string;
   @ManyToOne(_ => User)
   user!: User;
-  @OneToMany(_ => QuestionLike, questionLike => questionLike.question)
+  @OneToMany(_ => QuestionLike, questionLike => questionLike.question, { cascade: true })
   likedUsers!: QuestionLike[];
-  @OneToMany(_ => Comment, comment => comment.question)
+  @OneToMany(_ => Comment, comment => comment.question, { cascade: true })
   comments!: Comment[];
-  @OneToMany(_ => QuestionTag, questionTag => questionTag.question)
+  @OneToMany(_ => QuestionTag, questionTag => questionTag.question, { cascade: true })
   tags!: QuestionTag[];
 }
