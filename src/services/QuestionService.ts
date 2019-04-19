@@ -68,7 +68,9 @@ export class QuestionService {
     return this.questionTagRepository.delete(target.id);
   }
 
-  async likeQuestion(user: User, question: Question): Promise<QuestionLike | DeleteResult | undefined> {
+  async likeQuestion(user: User, questionId: number): Promise<QuestionLike | DeleteResult | undefined> {
+    const question = await this.questionRepository.findById(questionId);
+    if (!question) throw Error('NO_QUESTION');
     const target = await this.questionLikeRepository.findOne({ where: { user, question } });
     if (!target) {
       const newLikedQuestion = new QuestionLike();
