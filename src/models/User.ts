@@ -1,4 +1,4 @@
-import { Column, Entity, ManyToMany, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, ManyToMany, OneToMany, PrimaryGeneratedColumn, Unique } from 'typeorm';
 import { Base } from './Base';
 import { Comment } from './Comment';
 import { CommentLike } from './CommentLike';
@@ -7,24 +7,25 @@ import { QuestionLike } from './QuestionLike';
 import { UserTag } from './UserTag';
 
 @Entity()
+@Unique(['email'])
 export class User extends Base {
   @PrimaryGeneratedColumn()
   id!: number;
-  @Column()
+  @Column({ length: 50 })
   email!: string;
-  @Column()
+  @Column({ length: 10 })
   nickname!: string;
-  @Column()
+  @Column({ length: 20 })
   password!: string;
-  @Column()
+  @Column({ length: 10, nullable: true })
   rank!: string;
   @Column({ nullable: true })
   verifiedAt!: Date;
-  @Column()
+  @Column({ length: 50, nullable: true })
   token!: string;
-  @Column()
+  @Column({ length: 50, default: '' })
   githubUrl!: string;
-  @Column()
+  @Column({ length: 200, nullable: true })
   image!: string;
   @OneToMany(_ => Question, question => question.user)
   questions!: Question[];

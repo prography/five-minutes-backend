@@ -9,9 +9,9 @@ import { User } from './User';
 export class Question extends Base {
   @PrimaryGeneratedColumn()
   id!: number;
-  @Column()
+  @Column({ length: 50 })
   subject!: string;
-  @Column()
+  @Column({ length: 200 })
   content!: string;
   @Column({ type: 'text' })
   code!: string;

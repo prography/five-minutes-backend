@@ -8,7 +8,7 @@ import { User } from './User';
 export class Comment extends Base {
   @PrimaryGeneratedColumn()
   id!: number;
-  @Column()
+  @Column({ length: 200 })
   content!: string;
   @ManyToOne(_ => Question, question => question.comments)
   question!: Question;
