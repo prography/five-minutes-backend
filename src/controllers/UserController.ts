@@ -1,13 +1,15 @@
-import { Body, Controller, Delete, Get, Param, Post, Put, QueryParam, UseInterceptor } from 'routing-controllers';
+import { Body, Delete, Get, JsonController, Param, Post, Put, QueryParam, UseInterceptor } from 'routing-controllers';
 import { UserCreateDto } from '../Dto/UserCreateDto';
+import { EntityInterceptor } from '../interceptors/EntityInterceptor';
 import { PaginationInterceptor } from '../interceptors/PaginationInterceptor';
-import { User } from '../models/User';
 import { UserService } from '../services/UserService';
+import { UserUpdateDto } from './../Dto/UserUpdateDto';
 
-@Controller('/users')
+@JsonController('/users')
 export class UserController {
 
   @Post('/')
+  @UseInterceptor(EntityInterceptor)
   create(@Body() user: UserCreateDto) {
     return new UserService().create(
       user.email,
@@ -34,16 +36,19 @@ export class UserController {
   }
 
   @Get('/:id')
+  @UseInterceptor(EntityInterceptor)
   getUser(@Param('id') id: number) {
     return new UserService().getUserById(id);
   }
 
   @Put('/:id')
-  updateUser(@Param('id') id: number, @Body() user: User) {
+  @UseInterceptor(EntityInterceptor)
+  updateUser(@Param('id') id: number, @Body() user: UserUpdateDto) {
     return new UserService().update(id, user);
   }
 
   @Delete('/:id')
+  @UseInterceptor(EntityInterceptor)
   async deleteUser(@Param('id') id: number) {
     await new UserService().delete(id);
     return `delete item number ${id}`;
