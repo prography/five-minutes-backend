@@ -23,8 +23,8 @@ export class QuestionController  {
   @Get('/')
   @UseInterceptor(PaginationInterceptor)
   async getQuestions(
-    @QueryParam('page', { validate: true }) page: number,
-    @QueryParam('perPage', { validate: true }) perPage: number,
+    @QueryParam('page', { required: true }) page: number,
+    @QueryParam('perPage', { required: true }) perPage: number,
   ) {
     const [items, totalCount] = await new QuestionService().getQuestions(perPage, (page - 1) * perPage);
     return {
