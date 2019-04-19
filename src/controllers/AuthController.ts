@@ -1,8 +1,8 @@
-import { Body, Controller, Get, Param, Post, UseInterceptor } from 'routing-controllers';
+import { Body, Get, JsonController, Param, Post, UseInterceptor } from 'routing-controllers';
 import { EntityInterceptor } from '../interceptors/EntityInterceptor';
 import { User } from '../models/User';
 
-@Controller()
+@JsonController()
 export class AuthController {
 
   @Post('/sign-in')

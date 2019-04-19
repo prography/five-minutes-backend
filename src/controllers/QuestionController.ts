@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Post, Put, QueryParam, UseInterceptor } from 'routing-controllers';
+import { Body, Delete, Get, JsonController, Param, Post, Put, QueryParam, UseInterceptor } from 'routing-controllers';
 import { QuestionCreateDto } from '../Dto/QuestionCreateDto';
 import { EntityInterceptor } from '../interceptors/EntityInterceptor';
 import { PaginationInterceptor } from '../interceptors/PaginationInterceptor';
@@ -6,7 +6,7 @@ import { Question } from '../models/Question';
 import { User } from '../models/User';
 import { QuestionService } from '../services/QuestionService';
 
-@Controller('/questions')
+@JsonController('/questions')
 export class QuestionController  {
 
   @Post('/')
@@ -17,6 +17,7 @@ export class QuestionController  {
       question.subject,
       question.content,
       question.code,
+      question.tags,
     );
   }
 

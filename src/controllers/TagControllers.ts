@@ -1,10 +1,10 @@
-import { Body, Controller, Delete, Get, Param, Post, QueryParam, UseInterceptor } from 'routing-controllers';
+import { Body, Delete, Get, JsonController, Param, Post, QueryParam, UseInterceptor } from 'routing-controllers';
 import { TagCreateDto } from '../Dto/TagCreateDto';
 import { EntityInterceptor } from '../interceptors/EntityInterceptor';
 import { PaginationInterceptor } from '../interceptors/PaginationInterceptor';
 import { TagService } from '../services/TagService';
 
-@Controller('/tags')
+@JsonController('/tags')
 export class TagController {
 
   @Post('/')
