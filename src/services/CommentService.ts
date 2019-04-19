@@ -1,12 +1,19 @@
+import { DeleteResult } from 'typeorm';
 import { Comment } from '../models/Comment';
+import { CommentLike } from '../models/CommentLike';
+import { Question } from '../models/Question';
+import { User } from '../models/User';
+import { CommentLikeRepository } from '../repositories/CommentLikeRepository';
 import { CommentRepository } from '../repositories/CommentRepository';
 
 export class CommentService {
 
   private commentRepository: CommentRepository;
+  private commentLikeRepository: CommentLikeRepository;
 
   constructor() {
     this.commentRepository = new CommentRepository();
+    this.commentLikeRepository = new CommentLikeRepository();
   }
 
   create(comment: Comment): Promise<Comment> {
@@ -19,15 +26,33 @@ export class CommentService {
     return this.commentRepository.create(newComment);
   }
 
-  update() { }
+  update(id: number, comment: Partial<Comment>): Promise<Comment> {
+    return this.commentRepository.update(id, comment);
+  }
 
-  delete() { }
+  delete(id: number): Promise<DeleteResult> {
+    return this.commentRepository.delete(id);
+  }
 
-  getCommentsByQuestionId() { }
+  async getCommentsByQuestion(question: Question): Promise<[Comment[], number]> {
+    return await this.commentRepository.findWithCount({ where: { question } });
+  }
+  async getLikedComments(user: User): Promise<[Comment[], number]> {
+    return await this.commentRepository.findWithCount({ where: { user } });
+  }
 
-  getLikedComments() { }
+  async getLikedUsers(id: number): Promise<[CommentLike[], number]> {
+    return await this.commentLikeRepository.findWithCount({ where: { id } });
+  }
 
-  getLikedUsers() { }
-
-  likeComment() { }
+  async likeComment(user: User, comment: Comment): Promise<CommentLike | DeleteResult | undefined> {
+    const target = await this.commentRepository.findOne({ where: { user, comment } });
+    if (!target) {
+      const newLikeComment = new CommentLike();
+      newLikeComment.user = user;
+      newLikeComment.comment = comment;
+      return this.commentLikeRepository.create(newLikeComment);
+    }
+    return this.commentLikeRepository.delete(target.id);
+  }
 }
