@@ -1,38 +1,59 @@
-import { Body, Controller, Delete, Get, Param, Post, UseInterceptor } from 'routing-controllers';
+import { Body, Controller, Delete, Get, Param, Post, QueryParam, UseInterceptor } from 'routing-controllers';
+import { TagCreateDto } from '../Dto/TagCreateDto';
 import { EntityInterceptor } from '../interceptors/EntityInterceptor';
 import { PaginationInterceptor } from '../interceptors/PaginationInterceptor';
-import { Tag } from '../models/Tag';
+import { TagService } from '../services/TagService';
+
 
 @Controller('/tags')
 export class TagController {
 
   @Post('/')
   @UseInterceptor(EntityInterceptor)
-  create(@Body() tag: Tag) {
-    return tag;
+  create(@Body() tag: TagCreateDto) {
+    return new TagService().create(
+      tag.name,
+      tag.description,
+    );
   }
 
   @Get('/')
   @UseInterceptor(PaginationInterceptor)
-  getTags() {
+  async getTags(
+    @QueryParam('page', { required: true }) page: number,
+    @QueryParam('perPage', { required: true }) perPage: number,
+  ) {
+    const [items, totalCount] = await new TagService().getTags(perPage, (page - 1) * perPage);
     return {
-      items: [],
-      page: 1,
-      perPage: 10,
-      totalCount: 100,
-      count: 10,
+      items,
+      totalCount,
+      page,
+      perPage,
+      count: items.length,
     };
   }
 
-  @Get('/:id')
-  @UseInterceptor(EntityInterceptor)
-  getTag(@Param('id') id: number) {
-    return { id };
+  @Get('/search')
+  @UseInterceptor(PaginationInterceptor)
+  async searchTags(
+    @QueryParam('name') name: string,
+    @QueryParam('page', { required: true }) page: number,
+    @QueryParam('perPage', { required: true }) perPage: number,
+  ) {
+    const [items, totalCount] = await new TagService().getByName(name, perPage, (page - 1) * perPage);
+    return {
+      items,
+      totalCount,
+      page,
+      perPage,
+      count: items.length,
+    };
   }
 
   @Delete('/:id')
   @UseInterceptor(EntityInterceptor)
-  deleteTag(@Param('id') id: number) {
+  async deleteTag(@Param('id') id: number) {
+    await new TagService().delete(id);
     return `delete item number ${id}`;
   }
 
