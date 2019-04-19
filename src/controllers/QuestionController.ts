@@ -44,7 +44,7 @@ export class QuestionController  {
 
   @Get('/:id/comments')
   @UseInterceptor(PaginationInterceptor)
-  getQuestionComments(@Param('id') id: number) {
+  getQuestionComments(@Param('id') _: number) {
     return {
       items: [],
       page: 1,

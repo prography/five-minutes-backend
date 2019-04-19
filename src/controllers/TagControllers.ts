@@ -4,7 +4,6 @@ import { EntityInterceptor } from '../interceptors/EntityInterceptor';
 import { PaginationInterceptor } from '../interceptors/PaginationInterceptor';
 import { TagService } from '../services/TagService';
 
-
 @Controller('/tags')
 export class TagController {
 
