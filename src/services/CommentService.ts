@@ -11,17 +11,19 @@ import { UserRepository } from '../repositories/UserRepository';
 export class CommentService {
 
   private commentRepository: CommentRepository;
-  private userRespository: UserRepository;
+  private userRepository: UserRepository;
   private questionRepository: QuestionRepository;
+  private commentLikeRepository: CommentLikeRepository;
 
   constructor() {
     this.commentRepository = new CommentRepository();
-    this.userRespository = new UserRepository();
+    this.userRepository = new UserRepository();
     this.questionRepository = new QuestionRepository();
+    this.commentLikeRepository = new CommentLikeRepository();
   }
 
   async create(content: string, codeline: number, questionId: number, userId: number): Promise<Comment> {
-    const user = await this.userRespository.findById(userId);
+    const user = await this.userRepository.findById(userId);
     const question = await this.questionRepository.findById(questionId);
     if (!user || !question) throw Error('NO_USER OR NO QUESTION');
     const newComment = new Comment();
