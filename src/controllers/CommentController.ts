@@ -1,7 +1,6 @@
 import { Body, Delete, Get, JsonController, Param, Post, Put, UseInterceptor } from 'routing-controllers';
 import { CommentCreateDto } from '../Dto/CommentCreateDto';
 import { EntityInterceptor } from '../interceptors/EntityInterceptor';
-import { PaginationInterceptor } from '../interceptors/PaginationInterceptor';
 import { Comment } from '../models/Comment';
 import { CommentService } from '../services/CommentService';
 
@@ -17,18 +16,6 @@ export class CommentController {
       comment.question,
       comment.user,
     );
-  }
-
-  @Get('/')
-  @UseInterceptor(PaginationInterceptor)
-  getComments() {
-    return {
-      items: [],
-      page: 1,
-      perPage: 10,
-      totalCount: 100,
-      count: 10,
-    };
   }
 
   @Get('/:id')

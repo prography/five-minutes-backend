@@ -45,6 +45,7 @@ export class CommentService {
   getCommentsByQuestion(question: Question): Promise<[Comment[], number]> {
     return this.commentRepository.findWithCount({ where: { question }, relations: ['user'] });
   }
+
   getLikedComments(user: User): Promise<[Comment[], number]> {
     return this.commentRepository.findWithCount({ where: { user }, relations: ['user'] });
   }
@@ -53,7 +54,10 @@ export class CommentService {
     return this.commentLikeRepository.findWithCount({ where: { id }, relations: ['user'] });
   }
 
-  async likeComment(user: User, comment: Comment): Promise<CommentLike | DeleteResult | undefined> {
+  async likeComment(userId: number, commentId: number): Promise<CommentLike | DeleteResult | undefined> {
+    const user = await this.userRepository.findById(userId);
+    const comment = await this.commentRepository.findById(commentId);
+    if (!user || !comment) throw Error('NO_USER_OR_NO_COMMNET');
     const target = await this.commentRepository.findOne({ where: { user, comment } });
     if (!target) {
       const newLikeComment = new CommentLike();
