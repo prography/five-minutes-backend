@@ -1,15 +1,22 @@
-import { Body, Controller, Delete, Get, Param, Post, Put, UseInterceptor } from 'routing-controllers';
+import { Body, Delete, Get, JsonController, Param, Post, Put, UseInterceptor } from 'routing-controllers';
+import { CommentCreateDto } from '../Dto/CommentCreateDto';
 import { EntityInterceptor } from '../interceptors/EntityInterceptor';
 import { PaginationInterceptor } from '../interceptors/PaginationInterceptor';
 import { Comment } from '../models/Comment';
+import { CommentService } from '../services/CommentService';
 
-@Controller('/comments')
+@JsonController('/comments')
 export class CommentController {
 
   @Post('/')
   @UseInterceptor(EntityInterceptor)
-  create(@Body() comment: Comment) {
-    return comment;
+  create(@Body() comment: CommentCreateDto) {
+    return new CommentService().create(
+      comment.content,
+      comment.codeline,
+      comment.question,
+      comment.user,
+    );
   }
 
   @Get('/')

@@ -9,18 +9,18 @@ import { User } from './User';
 export class Question extends Base {
   @PrimaryGeneratedColumn()
   id!: number;
-  @Column()
+  @Column({ length: 50 })
   subject!: string;
-  @Column()
+  @Column({ length: 200 })
   content!: string;
   @Column({ type: 'text' })
   code!: string;
   @ManyToOne(_ => User)
   user!: User;
-  @OneToMany(_ => QuestionLike, questionLike => questionLike.question)
+  @OneToMany(_ => QuestionLike, questionLike => questionLike.question, { cascade: true })
   likedUsers!: QuestionLike[];
-  @OneToMany(_ => Comment, comment => comment.question)
+  @OneToMany(_ => Comment, comment => comment.question, { cascade: true })
   comments!: Comment[];
-  @OneToMany(_ => QuestionTag, questionTag => questionTag.question)
+  @OneToMany(_ => QuestionTag, questionTag => questionTag.question, { cascade: true })
   tags!: QuestionTag[];
 }

@@ -10,13 +10,12 @@ export class UserService {
     this.userRepository = new UserRepository();
   }
 
-  create(user: User): Promise<User> {
+  create(email: string, nickname: string, password: string, githubUrl: string): Promise<User> {
     const newUser = new User();
-    newUser.email = user.email;
-    newUser.nickname = user.nickname;
-    newUser.password = user.password;
-    newUser.rank = user.rank;
-    newUser.githubUrl = user.githubUrl;
+    newUser.email = email;
+    newUser.nickname = nickname;
+    newUser.password = password;
+    newUser.githubUrl = githubUrl;
     return this.userRepository.create(newUser);
   }
 

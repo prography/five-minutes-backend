@@ -8,7 +8,7 @@ import { User } from './User';
 export class Comment extends Base {
   @PrimaryGeneratedColumn()
   id!: number;
-  @Column()
+  @Column({ length: 200 })
   content!: string;
   @ManyToOne(_ => Question, question => question.comments)
   question!: Question;
@@ -16,6 +16,6 @@ export class Comment extends Base {
   user!: User;
   @Column()
   codeline!: number;
-  @OneToMany(_ => CommentLike, commentLike => commentLike.comment)
+  @OneToMany(_ => CommentLike, commentLike => commentLike.comment, { cascade: true })
   likedUsers!: CommentLike[];
 }

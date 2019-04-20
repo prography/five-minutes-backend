@@ -5,24 +5,30 @@ import { Question } from '../models/Question';
 import { User } from '../models/User';
 import { CommentLikeRepository } from '../repositories/CommentLikeRepository';
 import { CommentRepository } from '../repositories/CommentRepository';
+import { QuestionRepository } from '../repositories/QuestionRepository';
+import { UserRepository } from '../repositories/UserRepository';
 
 export class CommentService {
 
   private commentRepository: CommentRepository;
-  private commentLikeRepository: CommentLikeRepository;
+  private userRespository: UserRepository;
+  private questionRepository: QuestionRepository;
 
   constructor() {
     this.commentRepository = new CommentRepository();
-    this.commentLikeRepository = new CommentLikeRepository();
+    this.userRespository = new UserRepository();
+    this.questionRepository = new QuestionRepository();
   }
 
-  create(comment: Comment): Promise<Comment> {
+  async create(content: string, codeline: number, questionId: number, userId: number): Promise<Comment> {
+    const user = await this.userRespository.findById(userId);
+    const question = await this.questionRepository.findById(questionId);
+    if (!user || !question) throw Error('NO_USER OR NO QUESTION');
     const newComment = new Comment();
-    newComment.codeline = comment.codeline;
-    newComment.content = comment.content;
-    newComment.likedUsers = comment.likedUsers;
-    newComment.question = comment.question;
-    newComment.user = comment.user;
+    newComment.codeline = codeline;
+    newComment.content = content;
+    newComment.question = question;
+    newComment.user = user;
     return this.commentRepository.create(newComment);
   }
 
