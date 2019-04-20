@@ -1,4 +1,5 @@
 import { DeleteResult, Like } from 'typeorm';
+import { TagUpdateDto } from '../Dto/TagUpdateDto';
 import { Tag } from '../models/Tag';
 import { TagRepository } from '../repositories/TagRepository';
 
@@ -27,9 +28,8 @@ export class TagService {
   }
 
   // Tag 수정
-  update(id: number, tag: Partial<Tag>): Promise<Tag> {
+  update(id: number, tag: TagUpdateDto): Promise<Tag> {
     return this.tagRepository.update(id, {
-      name: tag.name,
       description: tag.description,
     });
   }
