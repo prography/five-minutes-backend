@@ -24,13 +24,21 @@ export class QuestionService {
 
   }
 
-  create(user: User, subject: string, content: string, code: string): Promise<Question> {
+  async create(user: User, subject: string, content: string, code: string, tags: Tag[]): Promise<Question> {
     const newQuestion = new Question();
     newQuestion.subject = subject;
     newQuestion.content = content;
     newQuestion.code = code;
     newQuestion.user = user;
-    return this.questionRepository.create(newQuestion);
+    const question = await this.questionRepository.create(newQuestion);
+    for (let i = 0; i < tags.length; i += 1) {
+      await this.questionTagRepository.create({
+        question,
+        tag: tags[i],
+      });
+    }
+    return <Promise<Question>>this.questionRepository.findById(question.id, { relations: ['tags'] });
+
   }
 
   update(id: number, question: Partial<Question>): Promise<Question> {
@@ -42,8 +50,7 @@ export class QuestionService {
   }
 
   async countLikes(id: number): Promise<number> {
-    const result = await this.questionLikeRepository.findWithCount({ where: { id } });
-    return result[1];
+    return this.questionLikeRepository.count({ where: { id } });
   }
 
   async addTag(name: string, question: Question): Promise<QuestionTag | undefined> {
@@ -68,7 +75,9 @@ export class QuestionService {
     return this.questionTagRepository.delete(target.id);
   }
 
-  async likeQuestion(user: User, question: Question): Promise<QuestionLike | DeleteResult | undefined> {
+  async likeQuestion(user: User, questionId: number): Promise<QuestionLike | DeleteResult | undefined> {
+    const question = await this.questionRepository.findById(questionId);
+    if (!question) throw Error('NO_QUESTION');
     const target = await this.questionLikeRepository.findOne({ where: { user, question } });
     if (!target) {
       const newLikedQuestion = new QuestionLike();
@@ -85,15 +94,17 @@ export class QuestionService {
   }
 
   getQuestion(id: number): Promise<Question | undefined> {
-    return this.questionRepository.findById(id);
+    return this.questionRepository.findById(id, { relations: [
+      'tags', 'tags.tag', 'likedUsers', 'likedUsers.user', 'comments', 'comments.user'] });
   }
 
-  async getQuestions(take: number, skip: number): Promise<[Question[], number]> {
-    return await this.questionRepository.findWithCount({ skip, take });
+  getQuestions(take: number, skip: number): Promise<[Question[], number]> {
+    return this.questionRepository.findWithCount({ skip, take, relations: ['tags', 'tags.tag'] });
   }
 
-  async getQuestionsByTags(tags: Tag[], take: number, skip: number): Promise<[Question[], number]> {
-    return await this.questionRepository.findWithCount({ take, skip, where: { 'tags.name': In(tags.map(tag => tag.name)) } });
+  getQuestionsByTags(tags: Tag[], take: number, skip: number): Promise<[Question[], number]> {
+    return this.questionRepository.findWithCount({
+      take, skip, where: { 'tags.name': In(tags.map(tag => tag.name)) }, relations: ['tags.tag.name'] });
   }
 
   getQuestionByUser(user : User): Promise<Question | undefined> {
