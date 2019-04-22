@@ -24,7 +24,7 @@ export class TagService {
 
   // Tag 검색
   getByName(name: string, take: number, skip: number): Promise<[Tag[], number]> {
-    return this.tagRepository.findWithCount({ take, skip, where: { name: Like(name) } });
+    return this.tagRepository.findWithCount({ take, skip, where: { name: Like(`${name}%`) } });
   }
 
   // Tag 수정
