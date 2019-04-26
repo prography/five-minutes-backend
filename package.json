@@ -6,7 +6,9 @@
   "scripts": {
     "tsc": "tsc",
     "dev": "nodemon",
-    "prod": "tsc && node ./dist"
+    "build": "tsc",
+    "start": "node ./dist",
+    "prod": "npm run build && npm run start"
   },
   "author": "",
   "license": "ISC",
