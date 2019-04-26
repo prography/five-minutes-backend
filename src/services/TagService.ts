@@ -1,4 +1,5 @@
 import { DeleteResult, Like } from 'typeorm';
+import { TagUpdateDto } from '../Dto/TagUpdateDto';
 import { Tag } from '../models/Tag';
 import { TagRepository } from '../repositories/TagRepository';
 
@@ -23,13 +24,12 @@ export class TagService {
 
   // Tag 검색
   getByName(name: string, take: number, skip: number): Promise<[Tag[], number]> {
-    return this.tagRepository.findWithCount({ take, skip, where: { name: Like(name) } });
+    return this.tagRepository.findWithCount({ take, skip, where: { name: Like(`${name}%`) } });
   }
 
   // Tag 수정
-  update(id: number, tag: Partial<Tag>): Promise<Tag> {
+  update(id: number, tag: TagUpdateDto): Promise<Tag> {
     return this.tagRepository.update(id, {
-      name: tag.name,
       description: tag.description,
     });
   }

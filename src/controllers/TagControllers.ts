@@ -1,5 +1,6 @@
-import { Body, Delete, Get, JsonController, Param, Post, QueryParam, UseInterceptor } from 'routing-controllers';
+import { Body, Delete, Get, JsonController, Param, Post, Put, QueryParam, UseInterceptor } from 'routing-controllers';
 import { TagCreateDto } from '../Dto/TagCreateDto';
+import { TagUpdateDto } from '../Dto/TagUpdateDto';
 import { EntityInterceptor } from '../interceptors/EntityInterceptor';
 import { PaginationInterceptor } from '../interceptors/PaginationInterceptor';
 import { TagService } from '../services/TagService';
@@ -47,6 +48,12 @@ export class TagController {
       perPage,
       count: items.length,
     };
+  }
+
+  @Put('/:id')
+  @UseInterceptor(EntityInterceptor)
+  updateTag(@Param('id') id: number, @Body() tag: TagUpdateDto) {
+    return new TagService().update(id, tag);
   }
 
   @Delete('/:id')
