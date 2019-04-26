@@ -1,6 +1,5 @@
-import { Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, JoinTable, ManyToMany, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { Base } from './Base';
-import { CommentLike } from './CommentLike';
 import { Question } from './Question';
 import { User } from './User';
 
@@ -16,6 +15,7 @@ export class Comment extends Base {
   user!: User;
   @Column()
   codeline!: number;
-  @OneToMany(_ => CommentLike, commentLike => commentLike.comment, { cascade: true })
-  likedUsers!: CommentLike[];
+  @ManyToMany(_ => User, user => user.likedComments)
+  @JoinTable()
+  likedUsers!: User[];
 }

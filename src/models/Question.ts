@@ -1,8 +1,7 @@
-import { Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, JoinTable, ManyToMany, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { Base } from './Base';
 import { Comment } from './Comment';
-import { QuestionLike } from './QuestionLike';
-import { QuestionTag } from './QuestionTag';
+import { Tag } from './Tag';
 import { User } from './User';
 
 @Entity()
@@ -17,10 +16,12 @@ export class Question extends Base {
   code!: string;
   @ManyToOne(_ => User)
   user!: User;
-  @OneToMany(_ => QuestionLike, questionLike => questionLike.question, { cascade: true })
-  likedUsers!: QuestionLike[];
+  @ManyToMany(_ => User, user => user.likedQuestions)
+  @JoinTable()
+  likedUsers!: User[];
   @OneToMany(_ => Comment, comment => comment.question, { cascade: true })
   comments!: Comment[];
-  @OneToMany(_ => QuestionTag, questionTag => questionTag.question, { cascade: true })
-  tags!: QuestionTag[];
+  @ManyToMany(_ => Tag, tag => tag.taggedQuestions)
+  @JoinTable()
+  tags!: Tag[];
 }
