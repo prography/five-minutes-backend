@@ -1,9 +1,5 @@
 {
   "AWSEBDockerrunVersion": "1",
-  "Image": {
-    "Name": "111847521028.dkr.ecr.ap-northeast-2.amazonaws.com/five-minutes:beta",
-    "Update": "true"
-  },
   "Ports": [{
     "ContainerPort": "3000",
     "HostPort": "80"
