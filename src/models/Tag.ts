@@ -1,7 +1,7 @@
 import { Column, Entity, ManyToMany, PrimaryGeneratedColumn, Unique } from 'typeorm';
 import { Base } from './Base';
-import { QuestionTag } from './QuestionTag';
-import { UserTag } from './UserTag';
+import { Question } from './Question';
+import { User } from './User';
 
 @Entity()
 @Unique(['name'])
@@ -12,8 +12,8 @@ export class Tag extends Base {
   name!: string;
   @Column({ length: 250 })
   description!: string;
-  @ManyToMany(_ => QuestionTag, questionTag => questionTag.tag)
-  taggedQuestions!: QuestionTag[];
-  @ManyToMany(_ => UserTag, userTag => userTag.tag)
-  taggedUsers!: UserTag[];
+  @ManyToMany(_ => Question, question => question.tags)
+  taggedQuestions!: Question[];
+  @ManyToMany(_ => User, user => user.tags)
+  taggedUsers!: User[];
 }
