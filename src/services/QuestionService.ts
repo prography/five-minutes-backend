@@ -1,55 +1,37 @@
 import { DeleteResult, In } from 'typeorm';
-import { QuestionUpdateDto } from '../Dto/QuestionUpdateDto';
 import { Question } from '../models/Question';
-import { Tag } from '../models/Tag';
 import { User } from '../models/User';
 import { QuestionRepository } from '../repositories/QuestionRepository';
-import { TagRepository } from '../repositories/TagRepository';
+import { Tag } from './../models/Tag';
 
 export class QuestionService {
 
   private questionRepository: QuestionRepository;
-  private tagRepository: TagRepository;
 
   constructor() {
     this.questionRepository = new QuestionRepository();
-    this.tagRepository = new TagRepository();
-
   }
 
-  async create(user: User, subject: string, content: string, code: string, tags: string[]): Promise<Question> {
+  async create(user: User, subject: string, content: string, code: string, tags: Tag[]): Promise<Question> {
     // 질문 인스턴스 생성
     const newQuestion = new Question();
     newQuestion.subject = subject;
     newQuestion.content = content;
     newQuestion.code = code;
     newQuestion.user = user;
-    //  태그 없으면 생성
-    const newTags: Tag[] = [];
-    for (let i = 0; i < tags.length; i += 1) {
-      if (!await this.tagRepository.findOne({ where: { name: tags[i] } })) {
-        newTags.push(await this.tagRepository.create({ name: tags[i], description: '' }));
-      }
-    }
+    newQuestion.tags = tags;
     // 짊문 생성
-    return this.questionRepository.create({ ...newQuestion, tags: newTags });
+    return this.questionRepository.create(newQuestion);
 
   }
 
-  async update(id: number, question: QuestionUpdateDto): Promise<Question> {
+  async update(id: number, subject: string, content: string, code: string, tags: Tag[]): Promise<Question> {
     // 질문 객체 생성
     const newQuestion = new Question();
-    newQuestion.subject = question.subject;
-    newQuestion.content = question.content;
-    newQuestion.code = question.code;
-    newQuestion.user = question.user;
-    //  태그 없으면 생성
-    const newTags: Tag[] = [];
-    for (let i = 0; i < question.tags.length; i += 1) {
-      if (!await this.tagRepository.findOne({ where: { name: question.tags[i] } })) {
-        newTags.push(await this.tagRepository.create({ name: question.tags[i], description: '' }));
-      }
-    }
+    newQuestion.subject = subject;
+    newQuestion.content = content;
+    newQuestion.code = code;
+    newQuestion.tags = tags;
     // 질문 수정
     return this.questionRepository.update(id, newQuestion);
   }
