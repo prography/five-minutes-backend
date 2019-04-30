@@ -1,9 +1,7 @@
 import { DeleteResult } from 'typeorm';
 import { Comment } from '../models/Comment';
-import { CommentLike } from '../models/CommentLike';
 import { Question } from '../models/Question';
 import { User } from '../models/User';
-import { CommentLikeRepository } from '../repositories/CommentLikeRepository';
 import { CommentRepository } from '../repositories/CommentRepository';
 import { QuestionRepository } from '../repositories/QuestionRepository';
 import { UserRepository } from '../repositories/UserRepository';
@@ -13,13 +11,11 @@ export class CommentService {
   private commentRepository: CommentRepository;
   private userRepository: UserRepository;
   private questionRepository: QuestionRepository;
-  private commentLikeRepository: CommentLikeRepository;
 
   constructor() {
     this.commentRepository = new CommentRepository();
     this.userRepository = new UserRepository();
     this.questionRepository = new QuestionRepository();
-    this.commentLikeRepository = new CommentLikeRepository();
   }
 
   async create(content: string, codeline: number, questionId: number, userId: number): Promise<Comment> {
@@ -50,21 +46,21 @@ export class CommentService {
     return this.commentRepository.findWithCount({ where: { user }, relations: ['user'] });
   }
 
-  getLikedUsers(id: number): Promise<[CommentLike[], number]> {
-    return this.commentLikeRepository.findWithCount({ where: { id }, relations: ['user'] });
-  }
+  // getLikedUsers(id: number): Promise<[CommentLike[], number]> {
+  //   return this.commentLikeRepository.findWithCount({ where: { id }, relations: ['user'] });
+  // }
 
-  async likeComment(userId: number, commentId: number): Promise<CommentLike | DeleteResult | undefined> {
-    const user = await this.userRepository.findById(userId);
-    const comment = await this.commentRepository.findById(commentId);
-    if (!user || !comment) throw Error('NO_USER_OR_NO_COMMNET');
-    const target = await this.commentRepository.findOne({ where: { user, comment } });
-    if (!target) {
-      const newLikeComment = new CommentLike();
-      newLikeComment.user = user;
-      newLikeComment.comment = comment;
-      return this.commentLikeRepository.create(newLikeComment);
-    }
-    return this.commentLikeRepository.delete(target.id);
-  }
+  // async likeComment(userId: number, commentId: number): Promise<CommentLike | DeleteResult | undefined> {
+  //   const user = await this.userRepository.findById(userId);
+  //   const comment = await this.commentRepository.findById(commentId);
+  //   if (!user || !comment) throw Error('NO_USER_OR_NO_COMMNET');
+  //   const target = await this.commentRepository.findOne({ where: { user, comment } });
+  //   if (!target) {
+  //     const newLikeComment = new CommentLike();
+  //     newLikeComment.user = user;
+  //     newLikeComment.comment = comment;
+  //     return this.commentLikeRepository.create(newLikeComment);
+  //   }
+  //   return this.commentLikeRepository.delete(target.id);
+  // }
 }

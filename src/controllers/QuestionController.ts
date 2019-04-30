@@ -3,21 +3,22 @@ import { QuestionCreateDto } from '../Dto/QuestionCreateDto';
 import { EntityInterceptor } from '../interceptors/EntityInterceptor';
 import { PaginationInterceptor } from '../interceptors/PaginationInterceptor';
 import { Question } from '../models/Question';
-import { User } from '../models/User';
 import { QuestionService } from '../services/QuestionService';
+import { TagService } from '../services/TagService';
 
 @JsonController('/questions')
 export class QuestionController  {
 
   @Post('/')
   @UseInterceptor(EntityInterceptor)
-  create(@Body() question: QuestionCreateDto) {
+  async create(@Body() question: QuestionCreateDto) {
+    const tags = await new TagService().getOrCreateByNames(question.tags);
     return new QuestionService().create(
       question.user,
       question.subject,
       question.content,
       question.code,
-      question.tags,
+      tags,
     );
   }
 
@@ -55,11 +56,11 @@ export class QuestionController  {
     };
   }
 
-  @Put('/:id/like')
-  @UseInterceptor(EntityInterceptor)
-  likeQuestion(@Param('id') id: number, @Body() body: { user: User }) {
-    return new QuestionService().likeQuestion(body.user, id);
-  }
+  // @Put('/:id/like')
+  // @UseInterceptor(EntityInterceptor)
+  // likeQuestion(@Param('id') id: number, @Body() body: { user: User }) {
+  //   return new QuestionService().likeQuestion(body.user, id);
+  // }
 
   @Put('/:id')
   @UseInterceptor(EntityInterceptor)
