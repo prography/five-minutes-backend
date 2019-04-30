@@ -1,6 +1,6 @@
 language: nodejs
 before_install:
-- docker build -t five-minutes-backend
+- docker build -t five-minutes-backend .
 script: "docker run five-minutes-backend"
 
 # 배포에 필요한 파일들만 archive 에 옮겨서 archive/archive.zip 파일로 만든다.
