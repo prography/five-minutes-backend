@@ -89,7 +89,7 @@ export class QuestionService {
   }
 
   getQuestions(take: number, skip: number): Promise<[Question[], number]> {
-    return this.questionRepository.findWithCount({ skip, take, relations: ['tags'] });
+    return this.questionRepository.findWithCount({ skip, take, relations: ['tags'], order: { createdAt: 'DESC' } });
   }
 
   getQuestionsByTags(tags: Tag[], take: number, skip: number): Promise<[Question[], number]> {
