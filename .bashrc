@@ -1,0 +1,13 @@
+export TYPEORM_CONNECTION="mariadb"
+export TYPEORM_HOST="172.17.0.2"
+export TYPEORM_USERNAME="root"
+export TYPEORM_PASSWORD="1016"
+# export TYPEORM_HOST="db.geusan.com"
+# export TYPEORM_USERNAME="root"
+# export TYPEORM_PASSWORD="geusan1016"
+export TYPEORM_DATABASE="code"
+export TYPEORM_PORT=3306
+export TYPEORM_SYNCHRONIZE="true"
+export TYPEORM_LOGGING="true"
+# export TYPEORM_ENTITIES="dist/models/*.js"
+export TYPEORM_ENTITIES="src/models/*.ts"

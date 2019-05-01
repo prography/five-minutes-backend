@@ -1,0 +1,30 @@
+branch-defaults:
+  dev:
+    environment: five-minutes-backend
+    group_suffix: null
+  feat/controllers:
+    environment: five-back2
+  feature/docker:
+    environment: five-back
+  fix/question-service:
+    environment: five-back2
+  master:
+    environment: five-back2
+environment-defaults:
+  five-back:
+    branch: null
+    repository: null
+global:
+  application_name: five-minutes-backend
+  branch: null
+  default_ec2_keyname: geusan-eb
+  default_platform: Docker 18.06.1-ce
+  default_region: ap-northeast-2
+  include_git_submodules: true
+  instance_profile: null
+  platform_name: null
+  platform_version: null
+  profile: geusan
+  repository: null
+  sc: git
+  workspace_type: Application
