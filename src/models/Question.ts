@@ -12,6 +12,8 @@ export class Question extends Base {
   subject!: string;
   @Column({ length: 200 })
   content!: string;
+  @Column({ length: 20 })
+  language!: string;
   @Column({ type: 'text' })
   code!: string;
   @ManyToOne(_ => User)
