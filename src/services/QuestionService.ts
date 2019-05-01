@@ -12,12 +12,13 @@ export class QuestionService {
     this.questionRepository = new QuestionRepository();
   }
 
-  async create(user: User, subject: string, content: string, code: string, tags: Tag[]): Promise<Question> {
+  async create(user: User, subject: string, content: string, code: string, language: string, tags: Tag[]): Promise<Question> {
     // 질문 인스턴스 생성
     const newQuestion = new Question();
     newQuestion.subject = subject;
     newQuestion.content = content;
     newQuestion.code = code;
+    newQuestion.language = language;
     newQuestion.user = user;
     newQuestion.tags = tags;
     // 짊문 생성
@@ -89,7 +90,7 @@ export class QuestionService {
   }
 
   getQuestions(take: number, skip: number): Promise<[Question[], number]> {
-    return this.questionRepository.findWithCount({ skip, take, relations: ['tags'] });
+    return this.questionRepository.findWithCount({ skip, take, relations: ['tags'], order: { createdAt: 'DESC' } });
   }
 
   getQuestionsByTags(tags: Tag[], take: number, skip: number): Promise<[Question[], number]> {

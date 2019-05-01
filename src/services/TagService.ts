@@ -27,15 +27,16 @@ export class TagService {
   }
 
   // 이름 배열로 태그 검색
-  async getByNames(names: string[], take: number, skip: number): Promise<[Tag[], number]> {
-    const [tags, totalCount] = await this.tagRepository.findWithCount({ take, skip, where: { name: In(names) } });
+  async getByNames(names: string[], take: number, skip: number): Promise<Tag[]> {
+    if (!names.length) return [];
+    const tags = await this.tagRepository.find({ take, skip, where: { name: In(names) } });
     tags.sort((tag1, tag2) => names.indexOf(tag2.name) - names.indexOf(tag1.name));
-    return [tags, totalCount];
+    return tags;
   }
 
   // 이름 배열로 검색, 없는 경우 생성 후 반환
   async getOrCreateByNames(names: string[]): Promise<Tag[]> {
-    const [results] = await this.getByNames(names, names.length, 0);
+    const results = await this.getByNames(names, names.length, 0);
     for (let i = 0; i < names.length; i += 1) {
       const tag = results.find(res => res.name === names[i]);
       if (!tag) {
