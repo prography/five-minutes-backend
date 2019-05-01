@@ -9,6 +9,8 @@ export class QuestionCreateDto {
   @IsString()
   code!: string;
   @IsString()
+  language!: string;
+  @IsString()
   user!: User;
   @IsArray()
   tags!: string[];

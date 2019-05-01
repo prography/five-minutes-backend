@@ -18,6 +18,7 @@ export class QuestionController  {
       question.subject,
       question.content,
       question.code,
+      question.language,
       tags,
     );
   }
