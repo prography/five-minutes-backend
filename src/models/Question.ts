@@ -10,7 +10,7 @@ export class Question extends Base {
   id!: number;
   @Column({ length: 50 })
   subject!: string;
-  @Column({ length: 200 })
+  @Column({ type: 'text' })
   content!: string;
   @Column({ length: 20 })
   language!: string;
