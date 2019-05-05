@@ -10,6 +10,7 @@ const app: express.Application = express();
 app.use(Sentry.Handlers.requestHandler());
 
 useExpressServer(app, {
+  routePrefix: 'api',
   defaultErrorHandler: false,
   // api route 연결
   controllers: [`${__dirname}/controllers/*.[tj]s`],

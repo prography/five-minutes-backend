@@ -1,8 +1,8 @@
 import { DeleteResult, In } from 'typeorm';
 import { Question } from '../models/Question';
-import { Tag } from '../models/Tag';
 import { User } from '../models/User';
 import { QuestionRepository } from '../repositories/QuestionRepository';
+import { Tag } from './../models/Tag';
 
 export class QuestionService {
 
@@ -12,44 +12,52 @@ export class QuestionService {
     this.questionRepository = new QuestionRepository();
   }
 
-  async create(user: User, subject: string, content: string, code: string, tags: Tag[]): Promise<Question> {
+  async create(user: User, subject: string, content: string, code: string, language: string, tags: Tag[]): Promise<Question> {
+    // 질문 인스턴스 생성
     const newQuestion = new Question();
     newQuestion.subject = subject;
     newQuestion.content = content;
     newQuestion.code = code;
+    newQuestion.language = language;
     newQuestion.user = user;
     newQuestion.tags = tags;
-    const question = await this.questionRepository.create(newQuestion);
-    return <Promise<Question>>this.questionRepository.findById(question.id, { relations: ['tags'] });
+    // 짊문 생성
+    return this.questionRepository.create(newQuestion);
 
   }
 
-  update(id: number, question: Partial<Question>): Promise<Question> {
-    return this.questionRepository.update(id, question);
+  async update(id: number, subject: string, content: string, code: string, tags: Tag[]): Promise<Question> {
+    // 질문 객체 생성
+    const newQuestion = new Question();
+    newQuestion.subject = subject;
+    newQuestion.content = content;
+    newQuestion.code = code;
+    newQuestion.tags = tags;
+    // 질문 수정
+    return this.questionRepository.update(id, newQuestion);
   }
 
   delete(id: number): Promise<DeleteResult> {
     return this.questionRepository.delete(id);
   }
 
-  // async countLikes(id: number): Promise<number> {
-  //   return this.questionLikeRepository.count({ where: { id } });
-  // }
+  async countLikes(id: number): Promise<number> {
+    const question = <Question>await this.questionRepository.findById(id, { relations: ['likedUsers'] });
+    return question.likedUsers.length;
+  }
 
-  // async addTag(name: string, question: Question): Promise<QuestionTag | undefined> {
-  //   let tag = await this.tagRepository.findOne({ where:{ name } });
+  // async addTag(name: string, questionId: number): Promise<undefined> {
+  //   let tag = <Tag>await this.tagRepository.findOne({ where:{ name } });
   //   if (!tag) {
   //     const newTag = new Tag();
   //     newTag.name = name;
   //     newTag.description = '아직 설명이 없습니다.';
   //     tag = await this.tagRepository.create(newTag);
   //   }
-  //   const isTagged = await this.questionTagRepository.findOne({ where: { name, question } });
-  //   if (!!isTagged) throw Error('TAGGED_ALREADY');
-  //   const newTag = new QuestionTag();
-  //   newTag.tag = tag;
-  //   newTag.question = question;
-  //   return this.questionTagRepository.create(newTag);
+  //   const question: Question = <Question>await this.questionRepository.findById(questionId, { relations: ['tags'] });
+  //   if (question.tags.find(t => t.id === tag.id)) throw Error('TAGGED_ALREADY');
+
+  //   return this.questionRepository.update(question.id, { ...question, tags: [...question.tags, tag] });
   // }
 
   // async removeTag(name: string, question: Question): Promise<DeleteResult> {
@@ -78,16 +86,16 @@ export class QuestionService {
 
   getQuestion(id: number): Promise<Question | undefined> {
     return this.questionRepository.findById(id, { relations: [
-      'tags', 'tags.tag', 'likedUsers', 'likedUsers.user', 'comments', 'comments.user'] });
+      'tags', 'likedUsers', 'comments', 'comments.user', 'comments.likedUsers'] });
   }
 
   getQuestions(take: number, skip: number): Promise<[Question[], number]> {
-    return this.questionRepository.findWithCount({ skip, take, relations: ['tags', 'tags.tag'] });
+    return this.questionRepository.findWithCount({ skip, take, relations: ['tags'], order: { createdAt: 'DESC' } });
   }
 
   getQuestionsByTags(tags: Tag[], take: number, skip: number): Promise<[Question[], number]> {
     return this.questionRepository.findWithCount({
-      take, skip, where: { 'tags.name': In(tags.map(tag => tag.name)) }, relations: ['tags.tag.name'] });
+      take, skip, where: { 'tags.name': In(tags.map(tag => tag.name)) }, relations: ['tags'] });
   }
 
   getQuestionByUser(user : User): Promise<Question | undefined> {

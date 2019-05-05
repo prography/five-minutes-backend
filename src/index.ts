@@ -10,8 +10,9 @@ async function startApplication() {
     await database.connect();
     console.log(`database is connected successfully`);
     // 어플리케이션 실행
-    await app.listen(PORT, HOST);
-    console.log(`Server is listening on port ${PORT}!`);
+    await app.listen(PORT, HOST, () => {
+      console.log(`Server is listening on port ${PORT}!`);
+    });
   } catch (e) {
     console.error(`Server has fatal error: ${e}`);
   }

@@ -1,8 +1,8 @@
 import { Body, Delete, Get, JsonController, Param, Post, Put, QueryParam, UseInterceptor } from 'routing-controllers';
 import { QuestionCreateDto } from '../Dto/QuestionCreateDto';
+import { QuestionUpdateDto } from '../Dto/QuestionUpdateDto';
 import { EntityInterceptor } from '../interceptors/EntityInterceptor';
 import { PaginationInterceptor } from '../interceptors/PaginationInterceptor';
-import { Question } from '../models/Question';
 import { QuestionService } from '../services/QuestionService';
 import { TagService } from '../services/TagService';
 
@@ -18,6 +18,7 @@ export class QuestionController  {
       question.subject,
       question.content,
       question.code,
+      question.language,
       tags,
     );
   }
@@ -64,8 +65,15 @@ export class QuestionController  {
 
   @Put('/:id')
   @UseInterceptor(EntityInterceptor)
-  updateQuestion(@Param('id') id: number, @Body() question: Partial<Question>) {
-    return new QuestionService().update(id, question);
+  async updateQuestion(@Param('id') id: number, @Body() question: QuestionUpdateDto) {
+    const tags = await new TagService().getOrCreateByNames(question.tags);
+    return new QuestionService().update(
+      id,
+      question.subject,
+      question.content,
+      question.code,
+      tags,
+    );
   }
 
   @Delete('/:id')

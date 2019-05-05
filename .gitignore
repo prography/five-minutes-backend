@@ -2,3 +2,8 @@ node_modules/
 dist/
 
 .env
+
+Dockerrun.aws.json
+.bashrc
+.ebextensions/
+.elasticbeanstalk/

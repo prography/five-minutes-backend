@@ -9,6 +9,8 @@ export class QuestionUpdateDto {
   @IsString()
   code!: string;
   @IsString()
+  language!: string;
+  @IsString()
   user!: User;
   @IsArray()
   tags!: string[];
