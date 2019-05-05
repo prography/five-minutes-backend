@@ -1,10 +1,15 @@
-import { IsString, IsUrl } from 'class-validator';
+import { IsNotEmpty, IsString, IsUrl } from 'class-validator';
 
 export class UserUpdateDto {
   @IsString()
-  nickname!: string;
-  @IsString()
+  @IsNotEmpty()
   password!: string;
+  @IsString()
+  @IsNotEmpty()
+  passwordConfirmation!: string;
+  @IsString()
+  @IsNotEmpty()
+  nickname!: string;
   @IsUrl()
   githubUrl!: string;
 }
