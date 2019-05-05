@@ -1,11 +1,12 @@
 import jsonwebtoken from 'jsonwebtoken';
+import { Codec } from './Codec';
 
 export class AuthHelper {
-  encodeToken(email: string, password: string) {
+  static generate(email: string, password: string) {
     const privateKey: string = process.env.JWT_SECRET || '';
-    return jsonwebtoken.sign({ email, password }, privateKey);
+    return jsonwebtoken.sign({ email, password: Codec.hash(password) }, privateKey);
   }
-  decodeToken(token: string) {
+  static extract(token: string) {
     return jsonwebtoken.decode(token);
   }
 }
