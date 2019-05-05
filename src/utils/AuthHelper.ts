@@ -3,9 +3,11 @@ import jsonwebtoken from 'jsonwebtoken';
 
 export class AuthHelper {
 
-  static generate(email: string, password: string) {
+  static generate(info: { email: string, rank: string }) {
     const privateKey: string = process.env.JWT_SECRET || '';
-    return jsonwebtoken.sign({ email, password: AuthHelper.hash(password) }, privateKey);
+    return jsonwebtoken.sign(info, privateKey, {
+      expiresIn: '30d',
+    });
   }
 
   static extract(token: string) {
