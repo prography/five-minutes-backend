@@ -19,19 +19,19 @@ useExpressServer(app, {
     const bearerToken = <string>action.request.headers['Authorization'];
     // bearer token이 없는 경우 인증 실패
     if (!bearerToken) return false;
+    return true;
+  },
+  currentUserChecker: async (action: Action) => {
     // bearer token에서 사용자 정보 가져옴
-    const token = bearerToken.replace(/Bearer\s/, '');
+    const token = action.request.headers['Authorization'].replace(/Bearer\s/, '');
     const authModel = AuthHelper.extract(token);
     // 토큰 파싱이 불가능한 경우(오염된 토큰)
     if (!authModel) return false;
-    const user = await new UserService().getUserByEmail(authModel.email);
-    // User가 없는 경우
+    const user = await new UserService().getUserByToken(token);
+    // User가 없는 경우, token으로 찾을 수 없는 유저
     if (!user) return false;
-    // user에 저장된 token과 입력한 token이 다른 경우(다른 브라우저인 경우?)
-    // if (user.token !== token) return false;
     // 모든 에러 체크를 통과하면 request에 user 추가
-    action.request.user = user;
-    return true;
+    return user;
   },
   // api route 연결
   controllers: [`${__dirname}/controllers/*.[tj]s`],

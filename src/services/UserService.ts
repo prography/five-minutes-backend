@@ -34,15 +34,19 @@ export class UserService {
     return this.userRepository.findById(id);
   }
 
-  getUserByEmail(email: string) {
+  getUserByEmail(email: string): Promise<User | undefined> {
     return this.userRepository.findOne({ where: { email } });
+  }
+
+  getUserByToken(token: string): Promise<User | undefined> {
+    return this.userRepository.findOne({ where: { token } });
   }
 
   // 인증관련
   /**
    * 로그인
    */
-  async signIn(email: string, password: string) {
+  async signIn(email: string, password: string): Promise<User> {
     const user = await this.userRepository.findOne({
       where: { email, password: AuthHelper.hash(password) },
     });
@@ -56,7 +60,7 @@ export class UserService {
   /**
    * 회원가입
    */
-  async signUp(userForm: UserCreateDto) {
+  async signUp(userForm: UserCreateDto): Promise<User | undefined> {
     const user = await this.userRepository.findOne({
       where: { email: userForm.email },
     });
@@ -70,7 +74,7 @@ export class UserService {
   /**
    * 비밀번호 찾기
    */
-  async findPassword(email: string) {
+  async findPassword(email: string): Promise<any> {
     const user = await this.userRepository.findOne({
       where: { email },
     });
@@ -82,7 +86,7 @@ export class UserService {
   /**
    * 비밀번호 변경
    */
-  async changePassword(userId: number, password: string, passwordConfirmation: string) {
+  async changePassword(userId: number, password: string, passwordConfirmation: string): Promise<User | undefined> {
     if (password !== passwordConfirmation) throw Error('PASSWORDS_ARE_NOT_EQUAL');
     return this.userRepository.update(userId, {
       password,
