@@ -1,5 +1,4 @@
-import { Body, Delete, Get, JsonController, Param, Post, Put, QueryParam, UseInterceptor } from 'routing-controllers';
-import { UserCreateDto } from '../Dto/UserCreateDto';
+import { Body, Delete, Get, JsonController, Param, Put, QueryParam, UseInterceptor } from 'routing-controllers';
 import { EntityInterceptor } from '../interceptors/EntityInterceptor';
 import { PaginationInterceptor } from '../interceptors/PaginationInterceptor';
 import { UserService } from '../services/UserService';
@@ -7,17 +6,6 @@ import { UserUpdateDto } from './../Dto/UserUpdateDto';
 
 @JsonController('/users')
 export class UserController {
-
-  @Post('/')
-  @UseInterceptor(EntityInterceptor)
-  create(@Body() user: UserCreateDto) {
-    return new UserService().create(
-      user.email,
-      user.nickname,
-      user.password,
-      user.githubUrl,
-    );
-  }
 
   @Get('/')
   @UseInterceptor(PaginationInterceptor)
