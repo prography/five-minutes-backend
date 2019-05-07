@@ -1,4 +1,4 @@
-import { Body, Delete, Get, JsonController, Param, Put, QueryParam, UseInterceptor } from 'routing-controllers';
+import { Authorized, Body, Delete, Get, JsonController, Param, Put, QueryParam, UseInterceptor } from 'routing-controllers';
 import { EntityInterceptor } from '../interceptors/EntityInterceptor';
 import { PaginationInterceptor } from '../interceptors/PaginationInterceptor';
 import { UserService } from '../services/UserService';
@@ -29,12 +29,14 @@ export class UserController {
     return new UserService().getUserById(id);
   }
 
+  @Authorized()
   @Put('/:id')
   @UseInterceptor(EntityInterceptor)
   updateUser(@Param('id') id: number, @Body() user: UserUpdateDto) {
     return new UserService().update(id, user);
   }
 
+  @Authorized()
   @Delete('/:id')
   @UseInterceptor(EntityInterceptor)
   async deleteUser(@Param('id') id: number) {
