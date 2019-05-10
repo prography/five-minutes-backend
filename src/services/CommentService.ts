@@ -42,6 +42,10 @@ export class CommentService {
     return this.commentRepository.findWithCount({ where: { question }, relations: ['user'] });
   }
 
+  getCommentsByQuestionId(questionId: number): Promise<[Comment[], number]> {
+    return this.commentRepository.findWithCount({ where: { 'question.id': questionId }, relations: ['user'] });
+  }
+
   getLikedComments(user: User): Promise<[Comment[], number]> {
     return this.commentRepository.findWithCount({ where: { user }, relations: ['user'] });
   }
