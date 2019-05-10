@@ -5,7 +5,10 @@
   "rules": {
     "indent": [true, "spaces", 2],
     "semicolon": [true, "always"],
-    "max-line-length": [true, 130],
+    "max-line-length": [true, {
+      "limit": 130,
+      "ignore-pattern": "^import |^export {(.*?)}"
+    }],
     "quotemark": [true, "single"]
   },
   "rulesDirectory": []

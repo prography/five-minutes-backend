@@ -68,7 +68,12 @@ export class UserService {
     if (!!user) throw Error('DUPLICATE_USER');
     // 패스워드 확인 불일치
     if (userForm.password !== userForm.passwordConfirmation) throw Error('PASSWORDS_ARE_NOT_EQUAL');
-    return this.userRepository.create({ ...userForm, password: AuthHelper.hash(userForm.password) });
+    return this.userRepository.create({
+      email: userForm.email,
+      password: AuthHelper.hash(userForm.password),
+      nickname: userForm.nickname,
+      githubUrl: userForm.githubUrl,
+    });
   }
 
   /**
