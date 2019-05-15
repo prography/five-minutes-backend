@@ -32,8 +32,9 @@ export class QuestionController  {
   async getQuestions(
     @QueryParam('page', { required: true }) page: number,
     @QueryParam('perPage', { required: true }) perPage: number,
+    @QueryParam('lastId') lastId?: number,
   ) {
-    const [items, totalCount] = await new QuestionService().getQuestions(perPage, (page - 1) * perPage);
+    const [items, totalCount] = await new QuestionService().getQuestions(perPage, (page - 1) * perPage, lastId);
     return {
       items,
       totalCount,

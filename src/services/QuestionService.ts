@@ -1,4 +1,4 @@
-import { DeleteResult, In } from 'typeorm';
+import { DeleteResult, FindConditions, In, MoreThan } from 'typeorm';
 import { QuestionUpdateDto } from '../Dto/QuestionUpdateDto';
 import { Question } from '../models/Question';
 import { User } from '../models/User';
@@ -90,13 +90,18 @@ export class QuestionService {
       'tags', 'likedUsers', 'comments', 'comments.user', 'comments.likedUsers'] });
   }
 
-  getQuestions(take: number, skip: number): Promise<[Question[], number]> {
-    return this.questionRepository.findWithCount({ skip, take, relations: ['tags'], order: { createdAt: 'DESC' } });
+  getQuestions(take: number, skip: number, lastId?: number): Promise<[Question[], number]> {
+    const where: FindConditions<Question> = {};
+    if (lastId) where.id = MoreThan(lastId);
+    return this.questionRepository.findWithCount({
+      skip, take, where, relations: ['tags'], order: { createdAt: 'DESC' } });
   }
 
-  getQuestionsByTags(tags: Tag[], take: number, skip: number): Promise<[Question[], number]> {
+  getQuestionsByTags(tags: Tag[], take: number, skip: number, lastId?: number): Promise<[Question[], number]> {
+    const where: FindConditions<Question> = {};
+    if (lastId) where.id = MoreThan(lastId);
     return this.questionRepository.findWithCount({
-      take, skip, where: { 'tags.name': In(tags.map(tag => tag.name)) }, relations: ['tags'] });
+      take, skip, where: { ...where, 'tags.name': In(tags.map(tag => tag.name)) }, relations: ['tags'] });
   }
 
   getQuestionByUser(user : User): Promise<Question | undefined> {
