@@ -1,4 +1,5 @@
-import { DeleteResult, In } from 'typeorm';
+import { DeleteResult, FindConditions, In, MoreThan } from 'typeorm';
+import { QuestionUpdateDto } from '../Dto/QuestionUpdateDto';
 import { Question } from '../models/Question';
 import { User } from '../models/User';
 import { QuestionRepository } from '../repositories/QuestionRepository';
@@ -26,12 +27,12 @@ export class QuestionService {
 
   }
 
-  async update(id: number, subject: string, content: string, code: string, tags: Tag[]): Promise<Question> {
+  async update(id: number, questionForm: QuestionUpdateDto, tags: Tag[]): Promise<Question> {
     // 질문 객체 생성
     const newQuestion = new Question();
-    newQuestion.subject = subject;
-    newQuestion.content = content;
-    newQuestion.code = code;
+    newQuestion.subject = questionForm.subject;
+    newQuestion.content = questionForm.content;
+    newQuestion.code = questionForm.code;
     newQuestion.tags = tags;
     // 질문 수정
     return this.questionRepository.update(id, newQuestion);
@@ -89,13 +90,18 @@ export class QuestionService {
       'tags', 'likedUsers', 'comments', 'comments.user', 'comments.likedUsers'] });
   }
 
-  getQuestions(take: number, skip: number): Promise<[Question[], number]> {
-    return this.questionRepository.findWithCount({ skip, take, relations: ['tags'], order: { createdAt: 'DESC' } });
+  getQuestions(take: number, skip: number, lastId?: number): Promise<[Question[], number]> {
+    const where: FindConditions<Question> = {};
+    if (lastId) where.id = MoreThan(lastId);
+    return this.questionRepository.findWithCount({
+      skip, take, where, relations: ['tags'], order: { createdAt: 'DESC' } });
   }
 
-  getQuestionsByTags(tags: Tag[], take: number, skip: number): Promise<[Question[], number]> {
+  getQuestionsByTags(tags: Tag[], take: number, skip: number, lastId?: number): Promise<[Question[], number]> {
+    const where: FindConditions<Question> = {};
+    if (lastId) where.id = MoreThan(lastId);
     return this.questionRepository.findWithCount({
-      take, skip, where: { 'tags.name': In(tags.map(tag => tag.name)) }, relations: ['tags'] });
+      take, skip, where: { ...where, 'tags.name': In(tags.map(tag => tag.name)) }, relations: ['tags'] });
   }
 
   getQuestionByUser(user : User): Promise<Question | undefined> {

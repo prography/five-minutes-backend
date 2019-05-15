@@ -1,4 +1,4 @@
-import { Body, Delete, Get, JsonController, Param, Post, Put, QueryParam, UseInterceptor } from 'routing-controllers';
+import { Authorized, Body, Delete, Get, JsonController, Param, Post, Put, QueryParam, UseInterceptor } from 'routing-controllers';
 import { TagCreateDto } from '../Dto/TagCreateDto';
 import { TagUpdateDto } from '../Dto/TagUpdateDto';
 import { EntityInterceptor } from '../interceptors/EntityInterceptor';
@@ -8,6 +8,7 @@ import { TagService } from '../services/TagService';
 @JsonController('/tags')
 export class TagController {
 
+  @Authorized()
   @Post('/')
   @UseInterceptor(EntityInterceptor)
   create(@Body() tag: TagCreateDto) {
@@ -50,12 +51,14 @@ export class TagController {
     };
   }
 
+  @Authorized()
   @Put('/:id')
   @UseInterceptor(EntityInterceptor)
   updateTag(@Param('id') id: number, @Body() tag: TagUpdateDto) {
     return new TagService().update(id, tag);
   }
 
+  @Authorized()
   @Delete('/:id')
   @UseInterceptor(EntityInterceptor)
   async deleteTag(@Param('id') id: number) {
