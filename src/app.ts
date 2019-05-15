@@ -16,14 +16,14 @@ useExpressServer(app, {
   defaultErrorHandler: false,
   authorizationChecker: async (action: Action) => {
     // headers 에서 bearer token 추출
-    const bearerToken = <string>action.request.headers['Authorization'];
+    const bearerToken = <string>action.request.headers['authorization'];
     // bearer token이 없는 경우 인증 실패
     if (!bearerToken) return false;
     return true;
   },
   currentUserChecker: async (action: Action) => {
     // bearer token에서 사용자 정보 가져옴
-    const token = action.request.headers['Authorization'].replace(/Bearer\s/, '');
+    const token = action.request.headers['authorization'].replace(/Bearer\s/, '');
     const authModel = AuthHelper.extract(token);
     // 토큰 파싱이 불가능한 경우(오염된 토큰)
     if (!authModel) return false;

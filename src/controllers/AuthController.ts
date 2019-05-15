@@ -9,17 +9,25 @@ export class AuthController {
 
   @Post('/sign-in')
   @UseInterceptor(EntityInterceptor)
-  signIn(
+  async signIn(
     @BodyParam('email', { required: true, validate: true }) email: string,
     @BodyParam('password', { required: true, validate: true }) password: string,
   ) {
-    return new UserService().signIn(email, password);
+    const user = await new UserService().signIn(email, password);
+    return {
+      ...user,
+      password: undefined,
+    };
   }
 
   @Post('/sign-up')
   @UseInterceptor(EntityInterceptor)
-  signUp(@Body({ required: true, validate: true }) userForm: UserCreateDto) {
-    return new UserService().signUp(userForm);
+  async signUp(@Body({ required: true, validate: true }) userForm: UserCreateDto) {
+    const user = await new UserService().signUp(userForm);
+    return {
+      ...user,
+      password: undefined,
+    };
   }
 
   @Authorized()
@@ -32,7 +40,10 @@ export class AuthController {
   @Get('/me')
   @UseInterceptor(EntityInterceptor)
   getMe(@CurrentUser({ required: true }) user: User) {
-    return user;
+    return {
+      ...user,
+      password: undefined,
+    };
   }
 
   // 토큰으로 내 정보 호출

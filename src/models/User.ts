@@ -19,7 +19,7 @@ export class User extends Base {
   rank!: string;
   @Column({ nullable: true })
   verifiedAt!: Date;
-  @Column({ length: 50, nullable: true })
+  @Column({ length: 200, nullable: true })
   token!: string;
   @Column({ length: 50, default: '' })
   githubUrl!: string;
