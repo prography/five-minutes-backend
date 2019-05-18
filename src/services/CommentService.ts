@@ -1,37 +1,44 @@
 import { DeleteResult } from 'typeorm';
+import { CommentUpdateDto } from '../Dto/CommentUpdateDto';
 import { Comment } from '../models/Comment';
 import { Question } from '../models/Question';
 import { User } from '../models/User';
 import { CommentRepository } from '../repositories/CommentRepository';
 import { QuestionRepository } from '../repositories/QuestionRepository';
-import { UserRepository } from '../repositories/UserRepository';
 
 export class CommentService {
 
   private commentRepository: CommentRepository;
-  private userRepository: UserRepository;
   private questionRepository: QuestionRepository;
 
   constructor() {
     this.commentRepository = new CommentRepository();
-    this.userRepository = new UserRepository();
     this.questionRepository = new QuestionRepository();
   }
 
-  async create(content: string, codeline: number, questionId: number, userId: number): Promise<Comment> {
-    const user = await this.userRepository.findById(userId);
+  async create(
+    user: User, content: string, type: string, status: string, codeline: number, questionId: number): Promise<Comment> {
     const question = await this.questionRepository.findById(questionId);
     if (!user || !question) throw Error('NO_USER OR NO QUESTION');
     const newComment = new Comment();
     newComment.codeline = codeline;
     newComment.content = content;
+    newComment.type = type;
+    newComment.status = status;
     newComment.question = question;
     newComment.user = user;
     return this.commentRepository.create(newComment);
   }
 
-  update(id: number, comment: Partial<Comment>): Promise<Comment> {
-    return this.commentRepository.update(id, comment);
+  async update(id: number, commentForm: CommentUpdateDto): Promise<Comment> {
+    // 질문 객체 생성
+    const newComment = new Comment();
+    newComment.codeline = commentForm.codeline;
+    newComment.content = commentForm.content;
+    newComment.type = commentForm.type;
+    newComment.status = commentForm.status;
+    // 질문 수정
+    return this.commentRepository.update(id, newComment);
   }
 
   delete(id: number): Promise<DeleteResult> {
