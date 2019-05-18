@@ -9,6 +9,10 @@ export class Comment extends Base {
   id!: number;
   @Column({ type: 'text' })
   content!: string;
+  @Column({ length: 20 })
+  type!: string;
+  @Column({ length: 20 })
+  status!: string;
   @ManyToOne(_ => Question, question => question.comments)
   question!: Question;
   @ManyToOne(_ => User, user => user.comments)
