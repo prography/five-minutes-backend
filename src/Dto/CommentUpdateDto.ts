@@ -1,14 +1,12 @@
-import { IsNotEmpty, IsNumber, IsString } from 'class-validator';
+import { IsEnum, IsNotEmpty, IsNumber, IsString } from 'class-validator';
 
 export class CommentUpdateDto {
   @IsString()
   @IsNotEmpty()
   content!: string;
-  @IsString()
-  @IsNotEmpty()
+  @IsEnum('string')
   type!: string;
-  @IsString()
-  @IsNotEmpty()
+  @IsEnum('string')
   status!: string;
   @IsNumber()
   @IsNotEmpty()
