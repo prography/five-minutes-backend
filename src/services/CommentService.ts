@@ -17,30 +17,29 @@ export class CommentService {
   }
 
   async create(
-    user: User, content: string, type: string, status: string, codeline: number, questionId: number): Promise<Comment> {
+    user: User, content: string, type: string, codeline: number, questionId: number): Promise<Comment> {
     const question = await this.questionRepository.findById(questionId);
     if (!user || !question) throw Error('NO_USER OR NO QUESTION');
     const newComment = new Comment();
     newComment.codeline = codeline;
     newComment.content = content;
     newComment.type = type;
-    newComment.status = status;
+    newComment.status = 'WAIT';
     newComment.question = question;
     newComment.user = user;
     return this.commentRepository.create(newComment);
   }
-
-  async update(id: number, commentForm: CommentUpdateDto): Promise<Comment> {
-    // 질문 객체 생성
+  updateStatus(id: number, status: string) {
+    const newComment = new Comment();
+    newComment.status = status;
+    return this.commentRepository.update(id, newComment);
+  }
+  update(id: number, commentForm: CommentUpdateDto): Promise<Comment> {
     const newComment = new Comment();
     newComment.codeline = commentForm.codeline;
     newComment.content = commentForm.content;
-    newComment.type = commentForm.type;
-    newComment.status = commentForm.status;
-    // 질문 수정
     return this.commentRepository.update(id, newComment);
   }
-
   delete(id: number): Promise<DeleteResult> {
     return this.commentRepository.delete(id);
   }

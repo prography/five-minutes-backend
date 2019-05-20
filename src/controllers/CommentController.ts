@@ -1,6 +1,6 @@
 import { Body, Delete, Get, JsonController, Param, Put, UseInterceptor } from 'routing-controllers';
+import { CommentUpdateDto } from '../Dto/CommentUpdateDto';
 import { EntityInterceptor } from '../interceptors/EntityInterceptor';
-import { Comment } from '../models/Comment';
 import { CommentService } from '../services/CommentService';
 
 @JsonController('/comments')
@@ -22,7 +22,7 @@ export class CommentController {
 
   @Put('/:id')
   @UseInterceptor(EntityInterceptor)
-  updateComment(@Param('id') id: number, @Body() comment: Comment) {
+  updateComment(@Param('id') id: number, @Body() comment: CommentUpdateDto) {
     return new CommentService().update(id, comment);
   }
 
