@@ -96,10 +96,10 @@ export class QuestionController  {
   @UseInterceptor(EntityInterceptor)
   createComment(@CurrentUser() user: User, @Param('id') questionId: number, @Body() comment: CommentCreateDto) {
     return new CommentService().create(
+      user,
       comment.content,
       comment.codeline,
       questionId,
-      user.id,
     );
   }
 

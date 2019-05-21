@@ -1,25 +1,23 @@
 import { DeleteResult } from 'typeorm';
-import { Comment } from '../models/Comment';
+import { CommentUpdateDto } from '../Dto/CommentUpdateDto';
+import { Comment, CommentStatus } from '../models/Comment';
 import { Question } from '../models/Question';
 import { User } from '../models/User';
 import { CommentRepository } from '../repositories/CommentRepository';
 import { QuestionRepository } from '../repositories/QuestionRepository';
-import { UserRepository } from '../repositories/UserRepository';
 
 export class CommentService {
 
   private commentRepository: CommentRepository;
-  private userRepository: UserRepository;
   private questionRepository: QuestionRepository;
 
   constructor() {
     this.commentRepository = new CommentRepository();
-    this.userRepository = new UserRepository();
     this.questionRepository = new QuestionRepository();
   }
 
-  async create(content: string, codeline: number, questionId: number, userId: number): Promise<Comment> {
-    const user = await this.userRepository.findById(userId);
+  async create(
+    user: User, content: string, codeline: number, questionId: number): Promise<Comment> {
     const question = await this.questionRepository.findById(questionId);
     if (!user || !question) throw Error('NO_USER OR NO QUESTION');
     const newComment = new Comment();
@@ -29,11 +27,17 @@ export class CommentService {
     newComment.user = user;
     return this.commentRepository.create(newComment);
   }
-
-  update(id: number, comment: Partial<Comment>): Promise<Comment> {
-    return this.commentRepository.update(id, comment);
+  updateStatus(id: number, status: CommentStatus) {
+    const newComment = new Comment();
+    newComment.status = status;
+    return this.commentRepository.update(id, newComment);
   }
-
+  update(id: number, commentForm: CommentUpdateDto): Promise<Comment> {
+    const newComment = new Comment();
+    newComment.codeline = commentForm.codeline;
+    newComment.content = commentForm.content;
+    return this.commentRepository.update(id, newComment);
+  }
   delete(id: number): Promise<DeleteResult> {
     return this.commentRepository.delete(id);
   }
