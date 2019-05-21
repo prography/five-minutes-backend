@@ -1,6 +1,6 @@
 import { DeleteResult } from 'typeorm';
 import { CommentUpdateDto } from '../Dto/CommentUpdateDto';
-import { Comment } from '../models/Comment';
+import { Comment, CommentStatus } from '../models/Comment';
 import { Question } from '../models/Question';
 import { User } from '../models/User';
 import { CommentRepository } from '../repositories/CommentRepository';
@@ -17,19 +17,17 @@ export class CommentService {
   }
 
   async create(
-    user: User, content: string, type: string, codeline: number, questionId: number): Promise<Comment> {
+    user: User, content: string, codeline: number, questionId: number): Promise<Comment> {
     const question = await this.questionRepository.findById(questionId);
     if (!user || !question) throw Error('NO_USER OR NO QUESTION');
     const newComment = new Comment();
     newComment.codeline = codeline;
     newComment.content = content;
-    newComment.type = type;
-    newComment.status = 'WAIT';
     newComment.question = question;
     newComment.user = user;
     return this.commentRepository.create(newComment);
   }
-  updateStatus(id: number, status: string) {
+  updateStatus(id: number, status: CommentStatus) {
     const newComment = new Comment();
     newComment.status = status;
     return this.commentRepository.update(id, newComment);

@@ -98,8 +98,6 @@ export class QuestionController  {
     return new CommentService().create(
       user,
       comment.content,
-      comment.type,
-      comment.status,
       comment.codeline,
       questionId,
     );
