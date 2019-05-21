@@ -19,9 +19,9 @@ export class Comment extends Base {
   id!: number;
   @Column({ type: 'text' })
   content!: string;
-  @Column({ length: 20, type: 'enum', enum: CommentType, default: CommentType.NORMAL })
+  @Column({ type: 'enum', enum: CommentType, default: CommentType.NORMAL })
   type!: CommentType;
-  @Column({ length: 20, type: 'enum', enum: CommentStatus, default: CommentStatus.WAIT })
+  @Column({ type: 'enum', enum: CommentStatus, default: CommentStatus.WAIT })
   status!: CommentStatus;
   @ManyToOne(_ => Question, question => question.comments)
   question!: Question;
