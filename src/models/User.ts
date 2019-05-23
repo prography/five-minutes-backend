@@ -4,7 +4,7 @@ import { Comment } from './Comment';
 import { Question } from './Question';
 import { Tag } from './Tag';
 
-@Entity()
+@Entity({ orderBy: { createdAt: 'DESC' } })
 @Unique(['email'])
 export class User extends Base {
   @PrimaryGeneratedColumn()
@@ -30,10 +30,14 @@ export class User extends Base {
   @OneToMany(_ => Comment, question => question.user, { cascade: true })
   comments!: Comment[];
   @ManyToMany(_ => Tag, tag => tag.taggedUsers, { cascade: true })
-  @JoinTable()
+  @JoinTable({ name: 'user_tags' })
   tags!: Tag[];
   @ManyToMany(_ => Question, question => question.likedUsers, { cascade: true })
   likedQuestions!: Question[];
   @ManyToMany(_ => Comment, comment => comment.likedUsers, { cascade: true })
   likedComments!: Comment[];
+  @ManyToMany(_ => Question, question => question.likedUsers, { cascade: true })
+  dislikedQuestions!: Question[];
+  @ManyToMany(_ => Comment, comment => comment.likedUsers, { cascade: true })
+  dislikedComments!: Comment[];
 }
