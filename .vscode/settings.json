@@ -8,6 +8,14 @@
     "tslint.exclude": "**/node_modules/**/*",
     "typescript.tsdk": "node_modules/typescript/lib",
     "javascript.implicitProjectConfig.experimentalDecorators": true,
+    "files.exclude": {
+        "**/.git": true,
+        "**/.svn": true,
+        "**/.hg": true,
+        "**/CVS": true,
+        "**/.DS_Store": true,
+        "dist/": true,
+    },
     "editor.codeActionsOnSave": {
         "source.fixAll": true,
         "source.organizeImports": true
