@@ -1,4 +1,4 @@
-import { Authorized, Body, CurrentUser, Delete, Get, JsonController, Param, Post, Put, QueryParam, UseInterceptor } from 'routing-controllers';
+import { Authorized, Body, BodyParam, CurrentUser, Delete, Get, JsonController, Param, Post, Put, QueryParam, UseInterceptor } from 'routing-controllers';
 import { CommentCreateDto } from '../Dto/CommentCreateDto';
 import { QuestionCreateDto } from '../Dto/QuestionCreateDto';
 import { QuestionUpdateDto } from '../Dto/QuestionUpdateDto';
@@ -13,7 +13,7 @@ import { TagService } from '../services/TagService';
 export class QuestionController  {
 
   @Authorized()
-  @Post('/')
+  @Post()
   @UseInterceptor(EntityInterceptor)
   async create(@CurrentUser({ required: true }) user: User, @Body() question: QuestionCreateDto) {
     const tags = await new TagService().getOrCreateByNames(question.tags);
@@ -27,7 +27,7 @@ export class QuestionController  {
     );
   }
 
-  @Get('/')
+  @Get()
   @UseInterceptor(PaginationInterceptor)
   async getQuestions(
     @QueryParam('page', { required: true }) page: number,
@@ -47,7 +47,7 @@ export class QuestionController  {
   @Get('/:id')
   @UseInterceptor(EntityInterceptor)
   getQuestion(@Param('id') id: number) {
-    return new QuestionService().getQuestion(id);
+    return new QuestionService().getQuestionById(id);
   }
 
   @Get('/:id/comments')
@@ -65,11 +65,19 @@ export class QuestionController  {
     };
   }
 
-  // @Put('/:id/like')
-  // @UseInterceptor(EntityInterceptor)
-  // likeQuestion(@Param('id') id: number, @Body() body: { user: User }) {
-  //   return new QuestionService().likeQuestion(body.user, id);
-  // }
+  @Authorized()
+  @Put('/:id/like')
+  @UseInterceptor(EntityInterceptor)
+  likeQuestion(@Param('id') id: number, @CurrentUser({ required: true }) user: User) {
+    return new QuestionService().like(id, user);
+  }
+
+  @Authorized()
+  @Put('/:id/dislike')
+  @UseInterceptor(EntityInterceptor)
+  dislikeQuestion(@Param('id') id: number, @CurrentUser({ required: true }) user: User) {
+    return new QuestionService().dislike(id, user);
+  }
 
   @Authorized()
   @Put('/:id')
@@ -101,6 +109,22 @@ export class QuestionController  {
       comment.codeline,
       questionId,
     );
+  }
+
+  @Authorized()
+  @Put('/:id/tags/add')
+  @UseInterceptor(EntityInterceptor)
+  async addTag(@Param('id') id: number, @BodyParam('tag') name: string) {
+    const tag = await new TagService().getOrCreateByNames([name]);
+    return new QuestionService().addTag(tag[0], id);
+  }
+
+  @Authorized()
+  @Put('/:id/tags/add')
+  @UseInterceptor(EntityInterceptor)
+  async removeTag(@Param('id') id: number, @BodyParam('tag') name: string) {
+    const tag = await new TagService().getOrCreateByNames([name]);
+    return new QuestionService().removeTag(tag[0], id);
   }
 
 }
