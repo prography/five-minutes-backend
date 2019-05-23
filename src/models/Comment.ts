@@ -13,7 +13,7 @@ export enum CommentType {
   NORMAL = 'NORMAL',
   MODIFY = 'MODIFY',
 }
-@Entity()
+@Entity({ orderBy: { createdAt: 'ASC' } })
 export class Comment extends Base {
   @PrimaryGeneratedColumn()
   id!: number;
@@ -30,6 +30,35 @@ export class Comment extends Base {
   @Column()
   codeline!: number;
   @ManyToMany(_ => User, user => user.likedComments)
-  @JoinTable()
+  @JoinTable({ name: 'comment_liked_users' })
   likedUsers!: User[];
+
+  @ManyToMany(_ => User, user => user.dislikedComments)
+  @JoinTable({ name: 'comment_disliked_users' })
+  dislikedUsers!: User[];
+
+  get likedUsersCount(): number {
+    return this.likedUsers.length;
+  }
+
+  get idsOfLikedUsers(): number[] {
+    return this.likedUsers.map(user => user.id);
+  }
+
+  get idsOfDislikedUsers(): number[] {
+    return this.dislikedUsers.map(user => user.id);
+  }
+
+  isLikedUser(user: User): boolean {
+    return this.idsOfLikedUsers.includes(user.id);
+  }
+
+  isDislikedUser(user: User): boolean {
+    return this.idsOfDislikedUsers.includes(user.id);
+  }
+
+  getLikedUserById(id: number): User | undefined {
+    return this.likedUsers.find(likedUser => likedUser.id === id);
+  }
+
 }
