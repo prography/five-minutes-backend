@@ -1,7 +1,10 @@
 import { Authorized, Body, BodyParam, CurrentUser, Get, JsonController, Param, Post, UseInterceptor } from 'routing-controllers';
 import { UserCreateDto } from '../Dto/UserCreateDto';
 import { EntityInterceptor } from '../interceptors/EntityInterceptor';
+import { PaginationInterceptor } from '../interceptors/PaginationInterceptor';
 import { User } from '../models/User';
+import { CommentService } from '../services/CommentService';
+import { QuestionService } from '../services/QuestionService';
 import { UserService } from '../services/UserService';
 
 @JsonController()
@@ -43,6 +46,35 @@ export class AuthController {
     return {
       ...user,
       password: undefined,
+    };
+  }
+
+  @Get('/me/comments')
+  async getMyComments(@CurrentUser({ required: true }) user: User) {
+    return {
+      items: await new CommentService().getCommentsByUser(user),
+    };
+  }
+
+  @Get('/me/questions')
+  async getMyQuestions(@CurrentUser({ required: true }) user: User) {
+    return {
+      items: await new QuestionService().getQuestionsByUser(user),
+    };
+  }
+
+  @Get('/me/liked-comments')
+  async getMyLikedComments(@CurrentUser({ required: true }) user: User) {
+    return {
+      items: await new CommentService().getCommentsByLikedUser(user),
+    };
+  }
+
+  @Get('/me/liked-questions')
+  @UseInterceptor(PaginationInterceptor)
+  async getMyLikedQuestions(@CurrentUser({ required: true }) user: User) {
+    return {
+      items: await new QuestionService().getQuestionsByLikedUser(user),
     };
   }
 

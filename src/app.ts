@@ -22,6 +22,7 @@ useExpressServer(app, {
     return true;
   },
   currentUserChecker: async (action: Action) => {
+    if (!action.request.headers['authorization']) return false;
     // bearer token에서 사용자 정보 가져옴
     const token = action.request.headers['authorization'].replace(/Bearer\s/, '');
     const authModel = AuthHelper.extract(token);
@@ -44,6 +45,7 @@ app.use(Sentry.Handlers.errorHandler());
 // TODO: 모든 에러 response 같은 형태로 보내주도록 추가
 app.use((err: any, _: express.Request, res: express.Response, ___: express.NextFunction) => {
   if (!res.headersSent) {
+    // console.error(err);
     res.status(err.httpCode || 500).send(err.message || 'something is wrong');
   }
 });

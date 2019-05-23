@@ -1,4 +1,4 @@
-import { DeleteResult } from 'typeorm';
+import { DeleteResult, In } from 'typeorm';
 import { CommentUpdateDto } from '../Dto/CommentUpdateDto';
 import { Comment, CommentStatus } from '../models/Comment';
 import { Question } from '../models/Question';
@@ -27,48 +27,71 @@ export class CommentService {
     newComment.user = user;
     return this.commentRepository.create(newComment);
   }
+
   updateStatus(id: number, status: CommentStatus) {
     const newComment = new Comment();
     newComment.status = status;
     return this.commentRepository.update(id, newComment);
   }
+
   update(id: number, commentForm: CommentUpdateDto): Promise<Comment> {
     const newComment = new Comment();
     newComment.codeline = commentForm.codeline;
     newComment.content = commentForm.content;
     return this.commentRepository.update(id, newComment);
   }
+
   delete(id: number): Promise<DeleteResult> {
     return this.commentRepository.delete(id);
   }
 
+  getCommentsByUser(user: User): Promise<Comment[]> {
+    return this.commentRepository.find({
+      where: { user }, relations: ['user', 'likedUsers', 'dislikedUsers'] });
+  }
+
   getCommentsByQuestion(question: Question): Promise<[Comment[], number]> {
-    return this.commentRepository.findWithCount({ where: { question }, relations: ['user'] });
+    return this.commentRepository.findWithCount({
+      where: { question }, relations: ['user', 'likedUsers', 'dislikedUsers'] });
   }
 
   getCommentsByQuestionId(questionId: number): Promise<[Comment[], number]> {
-    return this.commentRepository.findWithCount({ where: { 'question.id': questionId }, relations: ['user'] });
+    return this.commentRepository.findWithCount({
+      where: { 'question.id': questionId }, relations: ['user', 'likedUsers', 'dislikedUsers'] });
   }
 
-  getLikedComments(user: User): Promise<[Comment[], number]> {
-    return this.commentRepository.findWithCount({ where: { user }, relations: ['user'] });
+  getCommentsByLikedUser(user: User): Promise<[Comment[], number]> {
+    return this.commentRepository.findWithCount({
+      where: { likedUsers: In([user]) }, relations: ['user', 'likedUsers', 'dislikedUsers'], order: { createdAt: 'DESC' } });
   }
 
-  // getLikedUsers(id: number): Promise<[CommentLike[], number]> {
-  //   return this.commentLikeRepository.findWithCount({ where: { id }, relations: ['user'] });
-  // }
+  async like(id: number, user: User) {
+    const comment = <Comment>await this.commentRepository.findById(id, { relations: ['likedUsers'] });
+    if (comment.isLikedUser(user)) {
+      comment.likedUsers.splice(comment.idsOfLikedUsers.indexOf(user.id), 1);
+      return this.commentRepository.create(comment);
+    }
+    comment.likedUsers.push(user);
+    return this.commentRepository.create(comment);
+  }
 
-  // async likeComment(userId: number, commentId: number): Promise<CommentLike | DeleteResult | undefined> {
-  //   const user = await this.userRepository.findById(userId);
-  //   const comment = await this.commentRepository.findById(commentId);
-  //   if (!user || !comment) throw Error('NO_USER_OR_NO_COMMNET');
-  //   const target = await this.commentRepository.findOne({ where: { user, comment } });
-  //   if (!target) {
-  //     const newLikeComment = new CommentLike();
-  //     newLikeComment.user = user;
-  //     newLikeComment.comment = comment;
-  //     return this.commentLikeRepository.create(newLikeComment);
-  //   }
-  //   return this.commentLikeRepository.delete(target.id);
-  // }
+  async dislike(id: number, user: User) {
+    const comment = <Comment>await this.commentRepository.findById(id, { relations: ['dislikedUsers'] });
+    if (comment.isDislikedUser(user)) {
+      comment.dislikedUsers.splice(comment.idsOfDislikedUsers.indexOf(user.id), 1);
+      return this.commentRepository.create(comment);
+    }
+    comment.dislikedUsers.push(user);
+    return this.commentRepository.create(comment);
+  }
+
+  async resolve(id: number, user: User) {
+    const comment = <Comment>await this.commentRepository.findById(id, { relations: ['question', 'question.user'] });
+    if (comment.question.user.id !== user.id) throw Error('NO_WRITER');
+    if (comment.status !== CommentStatus.RESOLVE) {
+      return this.commentRepository.update(id, { status: CommentStatus.RESOLVE });
+    }
+    return comment;
+  }
+
 }
