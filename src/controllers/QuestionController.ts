@@ -102,13 +102,18 @@ export class QuestionController  {
   @Authorized()
   @Post('/:id/comments')
   @UseInterceptor(EntityInterceptor)
-  createComment(@CurrentUser() user: User, @Param('id') questionId: number, @Body() comment: CommentCreateDto) {
-    return new CommentService().create(
+  async createComment(@CurrentUser() user: User, @Param('id') questionId: number, @Body() comment: CommentCreateDto) {
+    const newComment = await new CommentService().create(
       user,
       comment.content,
       comment.codeline,
       questionId,
     );
+    return {
+      ...newComment,
+      likedUsers: [],
+      dislikedUsers: [],
+    };
   }
 
   @Authorized()
