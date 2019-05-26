@@ -10,6 +10,7 @@ export class CommentService {
 
   private commentRepository: CommentRepository;
   private questionRepository: QuestionRepository;
+  private commentRelations = ['user', 'dislikedUsers', 'likedUsers'];
 
   constructor() {
     this.commentRepository = new CommentRepository();
@@ -47,26 +48,26 @@ export class CommentService {
 
   getCommentsByUser(user: User): Promise<Comment[]> {
     return this.commentRepository.find({
-      where: { user }, relations: ['user', 'likedUsers', 'dislikedUsers'] });
+      where: { user }, relations: this.commentRelations });
   }
 
   getCommentsByQuestion(question: Question): Promise<[Comment[], number]> {
     return this.commentRepository.findWithCount({
-      where: { question }, relations: ['user', 'likedUsers', 'dislikedUsers'] });
+      where: { question }, relations: this.commentRelations });
   }
 
   getCommentsByQuestionId(questionId: number): Promise<[Comment[], number]> {
     return this.commentRepository.findWithCount({
-      where: { question: { id: questionId } }, relations: ['user', 'likedUsers', 'dislikedUsers'] });
+      where: { question: { id: questionId } }, relations: this.commentRelations });
   }
 
   getCommentsByLikedUser(user: User): Promise<[Comment[], number]> {
     return this.commentRepository.findWithCount({
-      where: { likedUsers: In([user]) }, relations: ['user', 'likedUsers', 'dislikedUsers'], order: { createdAt: 'DESC' } });
+      where: { likedUsers: In([user]) }, relations: this.commentRelations, order: { createdAt: 'DESC' } });
   }
 
   async like(id: number, user: User) {
-    const comment = <Comment>await this.commentRepository.findById(id, { relations: ['likedUsers'] });
+    const comment = <Comment>await this.commentRepository.findById(id, { relations: this.commentRelations });
     if (comment.isLikedUser(user)) {
       comment.likedUsers.splice(comment.idsOfLikedUsers.indexOf(user.id), 1);
       return this.commentRepository.create(comment);
@@ -76,7 +77,7 @@ export class CommentService {
   }
 
   async dislike(id: number, user: User) {
-    const comment = <Comment>await this.commentRepository.findById(id, { relations: ['dislikedUsers'] });
+    const comment = <Comment>await this.commentRepository.findById(id, { relations: this.commentRelations });
     if (comment.isDislikedUser(user)) {
       comment.dislikedUsers.splice(comment.idsOfDislikedUsers.indexOf(user.id), 1);
       return this.commentRepository.create(comment);

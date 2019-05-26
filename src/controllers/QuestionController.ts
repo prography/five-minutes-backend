@@ -17,7 +17,7 @@ export class QuestionController  {
   @UseInterceptor(EntityInterceptor)
   async create(@CurrentUser({ required: true }) user: User, @Body() question: QuestionCreateDto) {
     const tags = await new TagService().getOrCreateByNames(question.tags);
-    return new QuestionService().create(
+    const newQuestion = await new QuestionService().create(
       user,
       question.subject,
       question.content,
@@ -25,6 +25,11 @@ export class QuestionController  {
       question.language,
       tags,
     );
+    return {
+      ...newQuestion,
+      likedUsers: newQuestion.likedUsers || [],
+      dislikedUsers: newQuestion.dislikedUsers || [],
+    };
   }
 
   @Get()
@@ -34,7 +39,8 @@ export class QuestionController  {
     @QueryParam('perPage', { required: true }) perPage: number,
     @QueryParam('lastId') lastId?: number,
   ) {
-    const [items, totalCount] = await new QuestionService().getQuestions(perPage, (page - 1) * perPage, lastId);
+    const [items, totalCount] = await new QuestionService()
+      .getQuestions(perPage, (page - 1) * perPage, lastId);
     return {
       items,
       totalCount,
@@ -111,8 +117,8 @@ export class QuestionController  {
     );
     return {
       ...newComment,
-      likedUsers: [],
-      dislikedUsers: [],
+      likedUsers: newComment.likedUsers || [],
+      dislikedUsers: newComment.dislikedUsers || [],
     };
   }
 
