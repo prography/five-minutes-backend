@@ -1,6 +1,8 @@
 import { Authorized, Body, Delete, Get, JsonController, Param, Put, QueryParam, UseInterceptor } from 'routing-controllers';
 import { EntityInterceptor } from '../interceptors/EntityInterceptor';
 import { PaginationInterceptor } from '../interceptors/PaginationInterceptor';
+import { CommentService } from '../services/CommentService';
+import { QuestionService } from '../services/QuestionService';
 import { UserService } from '../services/UserService';
 import { UserUpdateDto } from './../Dto/UserUpdateDto';
 
@@ -42,6 +44,50 @@ export class UserController {
   async deleteUser(@Param('id') id: number) {
     await new UserService().delete(id);
     return `delete item number ${id}`;
+  }
+
+  @Get('/:id/questions')
+  @UseInterceptor(PaginationInterceptor)
+  async getQuestionsByUser(@Param('id') id: number) {
+    const user = await new UserService().getUserById(id);
+    if (!user) throw Error('NO_DOES_NOT_EXIST');
+    const items = await new QuestionService().getQuestionsByUser(user);
+    return {
+      items,
+    };
+  }
+
+  @Get('/:id/comments')
+  @UseInterceptor(PaginationInterceptor)
+  async getCommentsByUser(@Param('id') id: number) {
+    const user = await new UserService().getUserById(id);
+    if (!user) throw Error('NO_DOES_NOT_EXIST');
+    const items = await new CommentService().getCommentsByUser(user);
+    return {
+      items,
+    };
+  }
+
+  @Get('/:id/liked-questions')
+  @UseInterceptor(PaginationInterceptor)
+async getLikedQuestionsByUser(@Param('id') id: number) {
+    const user = await new UserService().getUserById(id);
+    if (!user) throw Error('NO_DOES_NOT_EXIST');
+    const items = await new QuestionService().getQuestionsByLikedUser(user);
+    return {
+      items,
+    };
+  }
+
+  @Get('/:id/liked-comments')
+  @UseInterceptor(PaginationInterceptor)
+  async getLikedCommentsByUser(@Param('id') id: number) {
+    const user = await new UserService().getUserById(id);
+    if (!user) throw Error('NO_DOES_NOT_EXIST');
+    const items = await new CommentService().getCommentsByLikedUser(user);
+    return {
+      items,
+    };
   }
 
 }
