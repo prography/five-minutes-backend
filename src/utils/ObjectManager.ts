@@ -33,8 +33,9 @@ export class ObjectManager {
         ) { // 데이터 필드인 경우
           callback(key, obj[key], obj);
           acc[key] = obj[key];
-        } else if (isObject && obj[key].length) { // 자식이 배열인 경우
-          acc[key] = obj[key].map((child: any) => ObjectManager.iterateChildren(child, callback));
+        } else if (isObject && Array.isArray(obj[key])) { // 자식이 배열인 경우
+          console.log(key, obj[key]);
+          acc[key] = obj[key].map((child: any) => ObjectManager.iterateChildren(child, callback)) || [];
         } else if (isObject) { // object가 자식인 경우
           acc[key] = ObjectManager.iterateChildren(obj[key], callback);
         }
