@@ -1,4 +1,4 @@
-import { DeleteResult, FindConditions, In, MoreThan } from 'typeorm';
+import { DeleteResult, FindConditions, In, Like, MoreThan } from 'typeorm';
 import { QuestionUpdateDto } from '../Dto/QuestionUpdateDto';
 import { Question } from '../models/Question';
 import { User } from '../models/User';
@@ -105,9 +105,16 @@ export class QuestionService {
     return this.questionRepository.findById(id, { relations: this.questionRelations });
   }
 
-  getQuestions(take: number, skip: number, lastId?: number): Promise<[Question[], number]> {
-    const where: FindConditions<Question> = {};
-    if (lastId) where.id = MoreThan(lastId);
+  getQuestions(
+    take: number,
+    skip: number,
+    options: { lastId?: number, subject?: string, tags?: string[], language?: string },
+  ): Promise<[Question[], number]> {
+    const where: FindConditions<Question> & { 'tags.name'?: any } = {};
+    if (options.lastId) where.id = MoreThan(options.lastId);
+    if (options.tags) where['tags.name'] = In(options.tags);
+    if (options.subject) where.subject = Like(`%${options.subject}%`);
+    if (options.language) where.language = `${options.language}`;
     return this.questionRepository.findWithCount({
       skip, take, where, relations: this.questionRelations });
   }

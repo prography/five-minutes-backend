@@ -10,7 +10,7 @@ export class CommentService {
 
   private commentRepository: CommentRepository;
   private questionRepository: QuestionRepository;
-  private commentRelations = ['user', 'dislikedUsers', 'likedUsers'];
+  private commentRelations = ['user', 'dislikedUsers', 'likedUsers', 'question.id'];
 
   constructor() {
     this.commentRepository = new CommentRepository();
