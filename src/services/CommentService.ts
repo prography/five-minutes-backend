@@ -46,8 +46,8 @@ export class CommentService {
     return this.commentRepository.delete(id);
   }
 
-  getCommentsByUser(user: User): Promise<Comment[]> {
-    return this.commentRepository.find({
+  getCommentsByUser(user: User): Promise<[Comment[], number]> {
+    return this.commentRepository.findWithCount({
       where: { user }, relations: this.commentRelations });
   }
 

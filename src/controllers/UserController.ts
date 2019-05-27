@@ -51,9 +51,10 @@ export class UserController {
   async getQuestionsByUser(@Param('id') id: number) {
     const user = await new UserService().getUserById(id);
     if (!user) throw Error('NO_DOES_NOT_EXIST');
-    const items = await new QuestionService().getQuestionsByUser(user);
+    const [items, totalCount] = await new QuestionService().getQuestionsByUser(user);
     return {
       items,
+      totalCount,
     };
   }
 
@@ -62,9 +63,10 @@ export class UserController {
   async getCommentsByUser(@Param('id') id: number) {
     const user = await new UserService().getUserById(id);
     if (!user) throw Error('NO_DOES_NOT_EXIST');
-    const items = await new CommentService().getCommentsByUser(user);
+    const [items, totalCount] = await new CommentService().getCommentsByUser(user);
     return {
       items,
+      totalCount,
     };
   }
 
@@ -73,9 +75,10 @@ export class UserController {
 async getLikedQuestionsByUser(@Param('id') id: number) {
     const user = await new UserService().getUserById(id);
     if (!user) throw Error('NO_DOES_NOT_EXIST');
-    const items = await new QuestionService().getQuestionsByLikedUser(user);
+    const [items, totalCount] = await new QuestionService().getQuestionsByLikedUser(user);
     return {
       items,
+      totalCount,
     };
   }
 
@@ -84,9 +87,10 @@ async getLikedQuestionsByUser(@Param('id') id: number) {
   async getLikedCommentsByUser(@Param('id') id: number) {
     const user = await new UserService().getUserById(id);
     if (!user) throw Error('NO_DOES_NOT_EXIST');
-    const items = await new CommentService().getCommentsByLikedUser(user);
+    const [items, totalCount] = await new CommentService().getCommentsByLikedUser(user);
     return {
       items,
+      totalCount,
     };
   }
 

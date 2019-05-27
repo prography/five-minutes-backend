@@ -91,12 +91,14 @@ export class QuestionService {
     return this.questionRepository.create(question);
   }
 
-  getQuestionsByLikedUser(user: User): Promise<Question[]> {
-    return this.questionRepository.find({ where: { 'likedUsers.id': In([user.id]) }, relations: this.questionRelations });
+  getQuestionsByLikedUser(user: User): Promise<[Question[], number]> {
+    return this.questionRepository.findWithCount({
+      where: { 'likedUsers.id': In([user.id]) }, relations: this.questionRelations });
   }
 
-  getQuestionsByDislikedUser(user: User): Promise<Question[]> {
-    return this.questionRepository.find({ where: { 'dislikedUsers.id': In([user.id]) }, relations: this.questionRelations });
+  getQuestionsByDislikedUser(user: User): Promise<[Question[], number]> {
+    return this.questionRepository.findWithCount({
+      where: { 'dislikedUsers.id': In([user.id]) }, relations: this.questionRelations });
   }
 
   getQuestionById(id: number): Promise<Question | undefined> {
@@ -117,7 +119,7 @@ export class QuestionService {
       take, skip, where: { ...where, 'tags.name': In(tags.map(tag => tag.name)) }, relations: this.questionRelations });
   }
 
-  getQuestionsByUser(user : User): Promise<Question[]> {
-    return this.questionRepository.find({ where: { user } });
+  getQuestionsByUser(user : User): Promise<[Question[], number]> {
+    return this.questionRepository.findWithCount({ where: { user } });
   }
 }
