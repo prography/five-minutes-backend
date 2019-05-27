@@ -1,5 +1,6 @@
 import qs from 'qs';
 import { Action, InterceptorInterface } from 'routing-controllers';
+import { ObjectManager } from '../utils/ObjectManager';
 
 export class PaginationInterceptor implements InterceptorInterface {
 
@@ -25,7 +26,7 @@ export class PaginationInterceptor implements InterceptorInterface {
       prevPage: page > 1 ? this.createQuery(url, { ...baseQuery, page: page - 1 }) : null,
       nextPage: page < lastPage ? this.createQuery(url, { ...baseQuery, page: page + 1 }) : null,
       currentPage: this.createQuery(url, { ...baseQuery }),
-      items: result.items,
+      items: ObjectManager.deleteValuesByKeys(result.items, ['token']),
     };
   }
 
