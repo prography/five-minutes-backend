@@ -63,7 +63,12 @@ export class CommentService {
 
   getCommentsByLikedUser(user: User): Promise<[Comment[], number]> {
     return this.commentRepository.findWithCount({
-      where: { likedUsers: In([user]) }, relations: this.commentRelations, order: { createdAt: 'DESC' } });
+      where: { 'likedUsers.id': In([user.id]) }, relations: this.commentRelations, order: { createdAt: 'DESC' } });
+  }
+
+  getCommentsByDislikedUser(user: User): Promise<[Comment[], number]> {
+    return this.commentRepository.findWithCount({
+      where: { 'dislikedUsers.id': In([user.id]) }, relations: this.commentRelations, order: { createdAt: 'DESC' } });
   }
 
   async like(id: number, user: User) {

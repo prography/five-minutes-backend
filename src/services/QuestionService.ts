@@ -92,11 +92,11 @@ export class QuestionService {
   }
 
   getQuestionsByLikedUser(user: User): Promise<Question[]> {
-    return this.questionRepository.find({ where: { likedUsers: In([user]) }, relations: this.questionRelations });
+    return this.questionRepository.find({ where: { 'likedUsers.id': In([user.id]) }, relations: this.questionRelations });
   }
 
   getQuestionsByDislikedUser(user: User): Promise<Question[]> {
-    return this.questionRepository.find({ where: { dislikedUsers: In([user]) }, relations: this.questionRelations });
+    return this.questionRepository.find({ where: { 'dislikedUsers.id': In([user.id]) }, relations: this.questionRelations });
   }
 
   getQuestionById(id: number): Promise<Question | undefined> {
