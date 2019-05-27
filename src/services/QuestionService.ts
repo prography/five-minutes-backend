@@ -10,7 +10,7 @@ export class QuestionService {
   private questionRepository: QuestionRepository;
 
   private questionRelations = [
-    'tags', 'likedUsers', 'dislikedUsers',
+    'tags', 'likedUsers', 'dislikedUsers', 'user',
     'comments', 'comments.user', 'comments.likedUsers', 'comments.dislikedUsers',
   ];
 
