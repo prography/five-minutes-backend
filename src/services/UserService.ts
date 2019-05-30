@@ -1,6 +1,7 @@
 import { DeleteResult, FindConditions } from 'typeorm';
 import { UserCreateDto } from '../Dto/UserCreateDto';
 import { UserUpdateDto } from '../Dto/UserUpdateDto';
+import { Tag } from '../models/Tag';
 import { User } from '../models/User';
 import { AuthHelper } from '../utils/AuthHelper';
 import { UserRepository } from './../repositories/UserRepository';
@@ -9,13 +10,17 @@ export class UserService {
 
   private userRepository: UserRepository;
 
+  private userRelations = ['tags'];
+
   constructor() {
     this.userRepository = new UserRepository();
   }
 
-  update(id: number, userForm: UserUpdateDto) {
+  update(id: number, userForm: UserUpdateDto, tags: Tag[]) {
     if (userForm.password !== userForm.passwordConfirmation) throw Error('PASSWORD_IS_WRONG');
-    return this.userRepository.update(id, {
+    return this.userRepository.create({
+      id,
+      tags,
       nickname: userForm.nickname,
       githubUrl: userForm.githubUrl,
     });
@@ -26,20 +31,20 @@ export class UserService {
   }
 
   async getUsers(take: number, skip: number, where?: FindConditions<User>): Promise<[User[], number]> {
-    const result = await this.userRepository.findWithCount({ take, skip, where });
+    const result = await this.userRepository.findWithCount({ take, skip, where, relations: this.userRelations });
     return result;
   }
 
   getUserById(id : number): Promise<User | undefined> {
-    return this.userRepository.findById(id);
+    return this.userRepository.findById(id, { relations: this.userRelations });
   }
 
   getUserByEmail(email: string): Promise<User | undefined> {
-    return this.userRepository.findOne({ where: { email } });
+    return this.userRepository.findOne({ where: { email }, relations: this.userRelations });
   }
 
   getUserByToken(token: string): Promise<User | undefined> {
-    return this.userRepository.findOne({ where: { token } });
+    return this.userRepository.findOne({ where: { token }, relations: this.userRelations });
   }
 
   // 인증관련
@@ -60,7 +65,7 @@ export class UserService {
   /**
    * 회원가입
    */
-  async signUp(userForm: UserCreateDto): Promise<User | undefined> {
+  async signUp(userForm: UserCreateDto, tags: Tag[]): Promise<User | undefined> {
     const user = await this.userRepository.findOne({
       where: { email: userForm.email },
     });
@@ -69,6 +74,7 @@ export class UserService {
     // 패스워드 확인 불일치
     if (userForm.password !== userForm.passwordConfirmation) throw Error('PASSWORDS_ARE_NOT_EQUAL');
     return this.userRepository.create({
+      tags,
       email: userForm.email,
       password: AuthHelper.hash(userForm.password),
       nickname: userForm.nickname,
@@ -96,5 +102,17 @@ export class UserService {
     return this.userRepository.update(userId, {
       password,
     });
+  }
+
+  addTag(user: User, tag: Tag) {
+    if (user.tagNames.includes(tag.name)) throw Error('ALREADY_EXIST');
+    user.tags.push(tag);
+    return this.userRepository.create(user);
+  }
+
+  removeTag(user: User, tag: Tag) {
+    if (!user.tagNames.includes(tag.name)) throw Error('DOES_NOT_TAGGED');
+    user.tags.splice(user.tagNames.indexOf(tag.name));
+    return this.userRepository.create(user);
   }
 }

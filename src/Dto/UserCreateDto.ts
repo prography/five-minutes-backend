@@ -1,4 +1,4 @@
-import { IsEmail, IsNotEmpty, IsString, IsUrl } from 'class-validator';
+import { IsArray, IsEmail, IsNotEmpty, IsString, IsUrl } from 'class-validator';
 
 export class UserCreateDto {
   @IsEmail()
@@ -15,4 +15,6 @@ export class UserCreateDto {
   passwordConfirmation!: string;
   @IsUrl()
   githubUrl!: string;
+  @IsArray()
+  tags!: string[];
 }

@@ -40,4 +40,8 @@ export class User extends Base {
   dislikedQuestions!: Question[];
   @ManyToMany(_ => Comment, comment => comment.likedUsers, { cascade: true })
   dislikedComments!: Comment[];
+
+  get tagNames() {
+    return this.tags.map(tag => tag.name);
+  }
 }

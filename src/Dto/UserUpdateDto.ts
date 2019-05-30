@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsString, IsUrl } from 'class-validator';
+import { IsArray, IsNotEmpty, IsString, IsUrl } from 'class-validator';
 
 export class UserUpdateDto {
   @IsString()
@@ -12,4 +12,6 @@ export class UserUpdateDto {
   nickname!: string;
   @IsUrl()
   githubUrl!: string;
+  @IsArray()
+  tags!: string[];
 }

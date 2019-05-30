@@ -2,6 +2,7 @@ import { Authorized, Body, BodyParam, CurrentUser, Get, JsonController, Param, P
 import { UserCreateDto } from '../Dto/UserCreateDto';
 import { EntityInterceptor } from '../interceptors/EntityInterceptor';
 import { User } from '../models/User';
+import { TagService } from '../services/TagService';
 import { UserService } from '../services/UserService';
 
 @JsonController()
@@ -23,7 +24,8 @@ export class AuthController {
   @Post('/sign-up')
   @UseInterceptor(EntityInterceptor)
   async signUp(@Body({ required: true, validate: true }) userForm: UserCreateDto) {
-    const user = await new UserService().signUp(userForm);
+    const tags = await new TagService().getOrCreateByNames(userForm.tags);
+    const user = await new UserService().signUp(userForm, tags);
     return {
       ...user,
       password: undefined,

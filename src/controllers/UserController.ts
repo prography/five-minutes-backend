@@ -1,8 +1,10 @@
-import { Authorized, Body, Delete, Get, JsonController, Param, Put, QueryParam, UseInterceptor } from 'routing-controllers';
+import { Authorized, Body, BodyParam, CurrentUser, Delete, Get, JsonController, Param, Put, QueryParam, UseInterceptor } from 'routing-controllers';
 import { EntityInterceptor } from '../interceptors/EntityInterceptor';
 import { PaginationInterceptor } from '../interceptors/PaginationInterceptor';
+import { User } from '../models/User';
 import { CommentService } from '../services/CommentService';
 import { QuestionService } from '../services/QuestionService';
+import { TagService } from '../services/TagService';
 import { UserService } from '../services/UserService';
 import { UserUpdateDto } from './../Dto/UserUpdateDto';
 
@@ -34,8 +36,9 @@ export class UserController {
   @Authorized()
   @Put('/:id')
   @UseInterceptor(EntityInterceptor)
-  updateUser(@Param('id') id: number, @Body() user: UserUpdateDto) {
-    return new UserService().update(id, user);
+  async updateUser(@Param('id') id: number, @Body() user: UserUpdateDto) {
+    const tags = await new TagService().getOrCreateByNames(user.tags);
+    return new UserService().update(id, user, tags);
   }
 
   @Authorized()
@@ -91,6 +94,28 @@ async getLikedQuestionsByUser(@Param('id') id: number) {
     return {
       items,
       totalCount,
+    };
+  }
+
+  @Authorized()
+  @Put('/:id/tags/add')
+  @UseInterceptor(EntityInterceptor)
+  async addTag(@CurrentUser({ required: true }) user: User, @BodyParam('tags') tagName: string[]) {
+    const tags = await new TagService().getOrCreateByNames(tagName);
+    const updatedUser = await new UserService().addTag(user, tags[0]);
+    return {
+      user: updatedUser,
+    };
+  }
+
+  @Authorized()
+  @Put('/:id/tags/remove')
+  @UseInterceptor(EntityInterceptor)
+  async removeTag(@CurrentUser({ required: true }) user: User, @BodyParam('tags') tagName: string[]) {
+    const tags = await new TagService().getOrCreateByNames(tagName);
+    const updatedUser = await new UserService().removeTag(user, tags[0]);
+    return {
+      user: updatedUser,
     };
   }
 
