@@ -43,7 +43,6 @@ export class QuestionController  {
     @QueryParam('language') language?: string,
     @QueryParam('tags') tags?: string[],
   ) {
-    console.log(lastId, subject, language, tags);
     const [items, totalCount] = await new QuestionService()
       .getQuestions(perPage, (page - 1) * perPage, { lastId, subject, language, tags });
     return {
