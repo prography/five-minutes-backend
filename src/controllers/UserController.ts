@@ -100,8 +100,8 @@ async getLikedQuestionsByUser(@Param('id') id: number) {
   @Authorized()
   @Put('/:id/tags/add')
   @UseInterceptor(EntityInterceptor)
-  async addTag(@CurrentUser({ required: true }) user: User, @BodyParam('tags') tagName: string[]) {
-    const tags = await new TagService().getOrCreateByNames(tagName);
+  async addTag(@CurrentUser({ required: true }) user: User, @BodyParam('tag', { required: true }) name: string) {
+    const tags = await new TagService().getOrCreateByNames([name]);
     const updatedUser = await new UserService().addTag(user, tags[0]);
     return {
       user: updatedUser,
@@ -111,8 +111,8 @@ async getLikedQuestionsByUser(@Param('id') id: number) {
   @Authorized()
   @Put('/:id/tags/remove')
   @UseInterceptor(EntityInterceptor)
-  async removeTag(@CurrentUser({ required: true }) user: User, @BodyParam('tags') tagName: string[]) {
-    const tags = await new TagService().getOrCreateByNames(tagName);
+  async removeTag(@CurrentUser({ required: true }) user: User, @BodyParam('tag', { required: true }) name: string) {
+    const tags = await new TagService().getOrCreateByNames([name]);
     const updatedUser = await new UserService().removeTag(user, tags[0]);
     return {
       user: updatedUser,

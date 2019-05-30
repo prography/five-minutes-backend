@@ -112,7 +112,7 @@ export class UserService {
 
   removeTag(user: User, tag: Tag) {
     if (!user.tagNames.includes(tag.name)) throw Error('DOES_NOT_TAGGED');
-    user.tags.splice(user.tagNames.indexOf(tag.name));
+    user.tags.splice(user.tagNames.indexOf(tag.name), 1);
     return this.userRepository.create(user);
   }
 }

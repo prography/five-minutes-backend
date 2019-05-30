@@ -31,7 +31,7 @@ export class Question extends Base {
   @JoinTable({ name: 'question_tags' })
   tags!: Tag[];
 
-  get tagStrings(): string[] {
+  get tagNames(): string[] {
     return this.tags.map(tag => tag.name);
   }
 
@@ -56,6 +56,6 @@ export class Question extends Base {
   }
 
   hasTag(tag: Tag):boolean {
-    return this.tagStrings.includes(tag.name);
+    return this.tagNames.includes(tag.name);
   }
 }

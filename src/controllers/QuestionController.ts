@@ -136,7 +136,7 @@ export class QuestionController  {
   }
 
   @Authorized()
-  @Put('/:id/tags/add')
+  @Put('/:id/tags/remove')
   @UseInterceptor(EntityInterceptor)
   async removeTag(@Param('id') id: number, @BodyParam('tag') name: string) {
     const tag = await new TagService().getOrCreateByNames([name]);

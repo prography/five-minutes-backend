@@ -59,15 +59,15 @@ export class QuestionService {
 
   async addTag(tag: Tag, questionId: number): Promise<Question> {
     const question = <Question>await this.questionRepository.findById(questionId, { relations: this.questionRelations });
-    if (question.tagStrings.includes(tag.name)) throw Error('ALREADY_EXIST');
+    if (question.tagNames.includes(tag.name)) throw Error('ALREADY_EXIST');
     question.tags.push(tag);
     return this.questionRepository.create(question);
   }
 
   async removeTag(tag: Tag, questionId: number): Promise<Question> {
     const question = <Question>await this.questionRepository.findById(questionId, { relations: this.questionRelations });
-    if (!question.tagStrings.includes(tag.name)) throw Error('DOES_NOT_TAGGED');
-    question.tags.splice(question.tagStrings.indexOf(tag.name));
+    if (!question.tagNames.includes(tag.name)) throw Error('DOES_NOT_TAGGED');
+    question.tags.splice(question.tagNames.indexOf(tag.name), 1);
     return this.questionRepository.create(question);
   }
 
