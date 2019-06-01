@@ -22,6 +22,7 @@ export class QueryHelper<T> {
   andWhere(query: string, params?: any) {
     if (this.isFirstWhere) {
       this.queryBuilder.where(query, params);
+      this.isFirstWhere = false;
     } else {
       this.queryBuilder.andWhere(query, params);
     }
@@ -30,6 +31,7 @@ export class QueryHelper<T> {
   orWhere(query: string, params?: any) {
     if (this.isFirstWhere) {
       this.queryBuilder.where(query, params);
+      this.isFirstWhere = false;
     } else {
       this.queryBuilder.orWhere(query, params);
     }
