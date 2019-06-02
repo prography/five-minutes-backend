@@ -1,4 +1,4 @@
-import { DeleteResult, In } from 'typeorm';
+import { DeleteResult, getRepository, In } from 'typeorm';
 import { CommentUpdateDto } from '../Dto/CommentUpdateDto';
 import { Comment, CommentStatus } from '../models/Comment';
 import { Question } from '../models/Question';
@@ -61,14 +61,28 @@ export class CommentService {
       where: { question: { id: questionId } }, relations: this.commentRelations });
   }
 
-  getCommentsByLikedUser(user: User): Promise<[Comment[], number]> {
+  async getCommentsByLikedUser(user: User): Promise<[Comment[], number]> {
+    const result = await getRepository(Question)
+      .query(
+        'SELECT clu.comments_id as id FROM comment_liked_users clu where clu.users_id = ?',
+        [user.id],
+      );
+    const ids = result.length ? result.map((u: { id: number }) => u.id) : [-1];
     return this.commentRepository.findWithCount({
-      where: { 'likedUsers.id': In([user.id]) }, relations: this.commentRelations, order: { createdAt: 'DESC' } });
+      where: { id: In(ids) }, relations: this.commentRelations,
+    });
   }
 
-  getCommentsByDislikedUser(user: User): Promise<[Comment[], number]> {
+  async getCommentsByDislikedUser(user: User): Promise<[Comment[], number]> {
+    const result = await getRepository(Question)
+      .query(
+        'SELECT cdu.comments_id as id FROM comment_disliked_users cdu where cdu.users_id = ?',
+        [user.id],
+      );
+    const ids = result.length ? result.map((u: { id: number }) => u.id) : [-1];
     return this.commentRepository.findWithCount({
-      where: { 'dislikedUsers.id': In([user.id]) }, relations: this.commentRelations, order: { createdAt: 'DESC' } });
+      where: { id: In(ids) }, relations: this.commentRelations,
+    });
   }
 
   async like(id: number, user: User) {

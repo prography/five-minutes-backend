@@ -92,14 +92,28 @@ export class QuestionService {
     return this.questionRepository.create(question);
   }
 
-  getQuestionsByLikedUser(user: User): Promise<[Question[], number]> {
+  async getQuestionsByLikedUser(user: User): Promise<[Question[], number]> {
+    const result = await getRepository(Question)
+      .query(
+        'SELECT qlu.questions_id as id FROM question_liked_users qlu where qlu.users_id = ?',
+        [user.id],
+      );
+    const ids = result.length ? result.map((u: { id: number }) => u.id) : [-1];
     return this.questionRepository.findWithCount({
-      where: { 'likedUsers.id': In([user.id]) }, relations: this.questionRelations });
+      where: { id: In(ids) }, relations: this.questionRelations,
+    });
   }
 
-  getQuestionsByDislikedUser(user: User): Promise<[Question[], number]> {
+  async getQuestionsByDislikedUser(user: User): Promise<[Question[], number]> {
+    const result = await getRepository(Question)
+      .query(
+        'SELECT qdu.questions_id as id FROM question_disliked_users qdu where qdu.users_id = ?',
+        [user.id],
+      );
+    const ids = result.length ? result.map((u: { id: number }) => u.id) : [-1];
     return this.questionRepository.findWithCount({
-      where: { 'dislikedUsers.id': In([user.id]) }, relations: this.questionRelations });
+      where: { id: In(ids) }, relations: this.questionRelations,
+    });
   }
 
   getQuestionById(id: number): Promise<Question | undefined> {
@@ -114,7 +128,7 @@ export class QuestionService {
     const questionQueryBuilder = new QueryHelper<Question>(Question, 'question');
 
     if (options.lastId) questionQueryBuilder.andWhere('question.id > :id', { id: options.lastId });
-    if (options.subject) questionQueryBuilder.andWhere('question.subject like :subject', { subject: `%${options.subject}%` });
+    if (options.subject) questionQueryBuilder.andWhere('question.subject LIKE :subject', { subject: `%${options.subject}%` });
     if (options.language) questionQueryBuilder.andWhere('question.language = :language', { language: options.language });
     if (options.tags && options.tags.length) {
       const tags: any[] = await getRepository(Question)
