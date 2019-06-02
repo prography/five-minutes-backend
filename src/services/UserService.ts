@@ -59,7 +59,7 @@ export class UserService {
     if (!user) throw Error('DOES_NOT_EXIST');
     // 로그인 성공시 token 생성 후 갱신
     const token = AuthHelper.generate({ email, rank: user.rank });
-    return this.userRepository.update(user.id, { token });
+    return this.userRepository.update(user.id, { token }, { relations: this.userRelations });
   }
 
   /**

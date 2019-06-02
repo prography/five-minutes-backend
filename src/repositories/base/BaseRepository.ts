@@ -15,9 +15,9 @@ export abstract class BaseRepository<T> {
   }
 
   // 수정
-  async update(id: string | number, item: QueryDeepPartialEntity<T>): Promise<T> {
+  async update(id: string | number, item: QueryDeepPartialEntity<T>, findOptions?: FindOneOptions<T>): Promise<T> {
     await this.repository.update(id, item);
-    return <Promise<T>>this.repository.findOne(id);
+    return <Promise<T>>this.repository.findOne(id, findOptions);
   }
 
   // 증가
