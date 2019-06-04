@@ -35,7 +35,7 @@ export class TagService {
   }
 
   // 이름 배열로 검색, 없는 경우 생성 후 반환
-  async getOrCreateByNames(names: string[]): Promise<Tag[]> {
+  async getOrCreateByNames(names: string[] = []): Promise<Tag[]> {
     const results = await this.getByNames(names, names.length, 0);
     for (let i = 0; i < names.length; i += 1) {
       const tag = results.find(res => res.name === names[i]);

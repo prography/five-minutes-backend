@@ -16,14 +16,14 @@ export class UserService {
     this.userRepository = new UserRepository();
   }
 
-  update(id: number, userForm: UserUpdateDto, tags: Tag[]) {
+  async update(id: number, userForm: UserUpdateDto, tags: Tag[]) {
     if (userForm.password !== userForm.passwordConfirmation) throw Error('PASSWORD_IS_WRONG');
-    return this.userRepository.create({
-      id,
-      tags,
-      nickname: userForm.nickname,
-      githubUrl: userForm.githubUrl,
-    });
+    const newUser = await this.userRepository.findById(id, { relations: ['tags'] });
+    if (!newUser) throw Error('NO_USER');
+    if (tags.length) newUser.tags = tags;
+    if (!!userForm.githubUrl) newUser.githubUrl = userForm.githubUrl;
+    if (!!userForm.nickname) newUser.nickname = userForm.nickname;
+    return this.userRepository.create(newUser);
   }
 
   delete(id: number): Promise<DeleteResult> {
