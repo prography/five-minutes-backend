@@ -4,6 +4,8 @@ import { QuestionCreateDto } from '../Dto/QuestionCreateDto';
 import { QuestionUpdateDto } from '../Dto/QuestionUpdateDto';
 import { EntityInterceptor } from '../interceptors/EntityInterceptor';
 import { PaginationInterceptor } from '../interceptors/PaginationInterceptor';
+import { QuestionPaginationInterceptor } from '../interceptors/QuestionPaginationInterceptor';
+import { QuestionStatus } from '../models/Question';
 import { User } from '../models/User';
 import { CommentService } from '../services/CommentService';
 import { QuestionService } from '../services/QuestionService';
@@ -34,6 +36,7 @@ export class QuestionController  {
 
   @Get()
   @Get('/search')
+  @UseInterceptor(QuestionPaginationInterceptor)
   @UseInterceptor(PaginationInterceptor)
   async getQuestions(
     @QueryParam('page', { required: true }) page: number,
@@ -56,12 +59,14 @@ export class QuestionController  {
   }
 
   @Get('/:id')
+  @UseInterceptor(QuestionPaginationInterceptor)
   @UseInterceptor(EntityInterceptor)
   getQuestion(@Param('id') id: number) {
     return new QuestionService().getQuestionById(id);
   }
 
   @Get('/:id/comments')
+  @UseInterceptor(QuestionPaginationInterceptor)
   @UseInterceptor(PaginationInterceptor)
   async getQuestionComments(
     @Param('id') id: number,
@@ -74,6 +79,20 @@ export class QuestionController  {
       perPage: totalCount,
       count: totalCount,
     };
+  }
+
+  @Authorized()
+  @Put('/:id/status/resolve')
+  @UseInterceptor(EntityInterceptor)
+  changeStatusToResolve(@Param('id') id: number) {
+    return new QuestionService().updateStatus(id, QuestionStatus.RESOLVE);
+  }
+
+  @Authorized()
+  @Put('/:id/status/pending')
+  @UseInterceptor(EntityInterceptor)
+  changeStatusToPending(@Param('id') id: number) {
+    return new QuestionService().updateStatus(id, QuestionStatus.PENDING);
   }
 
   @Authorized()
