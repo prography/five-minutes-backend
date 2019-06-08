@@ -11,7 +11,7 @@ export class MarkdownCompiler {
       text = text.replace(/\s{1,}/g, ' ');
       if (options) {
         if (options.length) {
-          text = text.slice(0, length);
+          text = text.slice(0, options.length);
         }
       }
     }
