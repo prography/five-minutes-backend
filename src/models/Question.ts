@@ -4,6 +4,10 @@ import { Comment } from './Comment';
 import { Tag } from './Tag';
 import { User } from './User';
 
+export enum QuestionStatus {
+  PENDING = 'PENDING',
+  RESOLVE = 'RESOLVE',
+}
 @Entity({ orderBy: { createdAt: 'DESC' } })
 export class Question extends Base {
   @PrimaryGeneratedColumn()
@@ -16,6 +20,8 @@ export class Question extends Base {
   language!: string;
   @Column({ type: 'text' })
   code!: string;
+  @Column({ type: 'enum', enum: QuestionStatus, default: QuestionStatus.PENDING })
+  status!: QuestionStatus;
   @ManyToOne(_ => User)
   user!: User;
   @ManyToMany(_ => User, user => user.likedQuestions)

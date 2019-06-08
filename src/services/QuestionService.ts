@@ -1,6 +1,6 @@
 import { DeleteResult, FindConditions, getRepository, In, MoreThan } from 'typeorm';
 import { QuestionUpdateDto } from '../Dto/QuestionUpdateDto';
-import { Question } from '../models/Question';
+import { Question, QuestionStatus } from '../models/Question';
 import { User } from '../models/User';
 import { QuestionRepository } from '../repositories/QuestionRepository';
 import { QueryHelper } from '../utils/QueryHelper';
@@ -42,6 +42,10 @@ export class QuestionService {
     newQuestion.tags = tags;
     // 질문 수정
     return this.questionRepository.create(newQuestion);
+  }
+
+  async updateStatus(id: number, status: QuestionStatus) {
+    return this.questionRepository.update(id, { status });
   }
 
   delete(id: number): Promise<DeleteResult> {
