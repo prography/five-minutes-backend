@@ -11,6 +11,8 @@ export class UserCreateDto {
   @IsNotEmpty()
   password!: string;
   @IsString()
+  image!: string;
+  @IsString()
   @IsNotEmpty()
   passwordConfirmation!: string;
   @IsUrl()

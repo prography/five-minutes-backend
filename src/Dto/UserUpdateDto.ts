@@ -12,6 +12,8 @@ export class UserUpdateDto {
   nickname!: string;
   @IsUrl()
   githubUrl!: string;
+  @IsString()
+  image!: string;
   @IsArray()
   tags!: string[];
 }

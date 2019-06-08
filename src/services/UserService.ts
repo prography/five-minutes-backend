@@ -23,6 +23,7 @@ export class UserService {
     if (tags.length) newUser.tags = tags;
     if (!!userForm.githubUrl) newUser.githubUrl = userForm.githubUrl;
     if (!!userForm.nickname) newUser.nickname = userForm.nickname;
+    if (!!userForm.image) newUser.image = userForm.image;
     return this.userRepository.create(newUser);
   }
 
@@ -79,6 +80,7 @@ export class UserService {
       password: AuthHelper.hash(userForm.password),
       nickname: userForm.nickname,
       githubUrl: userForm.githubUrl,
+      image: userForm.image,
     });
   }
 
