@@ -59,14 +59,12 @@ export class QuestionController  {
   }
 
   @Get('/:id')
-  @UseInterceptor(QuestionPaginationInterceptor)
   @UseInterceptor(EntityInterceptor)
   getQuestion(@Param('id') id: number) {
     return new QuestionService().getQuestionById(id);
   }
 
   @Get('/:id/comments')
-  @UseInterceptor(QuestionPaginationInterceptor)
   @UseInterceptor(PaginationInterceptor)
   async getQuestionComments(
     @Param('id') id: number,

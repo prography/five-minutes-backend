@@ -9,9 +9,7 @@ export class QuestionPaginationInterceptor implements InterceptorInterface {
       ...item,
       content: MarkdownCompiler.compile(item.content || '', { length: 80 }),
     }));
-    return {
-      result,
-    };
+    return result;
   }
 
 }
