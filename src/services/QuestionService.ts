@@ -128,7 +128,7 @@ export class QuestionService {
     take: number,
     skip: number,
     options: { lastId?: number, subject?: string, tags?: Tag[], language?: string },
-  ): Promise<[Question[], number]> {
+  ): Promise<[Partial<Question>[], number]> {
     const questionQueryBuilder = new QueryHelper<Question>(Question, 'question');
 
     if (options.lastId) questionQueryBuilder.andWhere('question.id > :id', { id: options.lastId });
@@ -152,13 +152,18 @@ export class QuestionService {
     questionQueryBuilder.addRelation('question.user', 'user');
     questionQueryBuilder.addRelation('question.likedUsers', 'likedUsers');
     questionQueryBuilder.addRelation('question.dislikedUsers', 'dislikedUsers');
+    questionQueryBuilder.addRelation('question.comments', 'comments');
     questionQueryBuilder.take(take);
     questionQueryBuilder.skip(skip);
     // console.log(questionQueryBuilder.query);
     // console.log(questionQueryBuilder.params);
     const count = await questionQueryBuilder.count();
     const items = await questionQueryBuilder.getMany();
-    return [items, count];
+
+    return [
+      items.map(item => ({ ...item, comments_count: item.comments.length, comments: undefined })),
+      count,
+    ];
   }
 
   getQuestionsByTags(tags: Tag[], take: number, skip: number, lastId?: number): Promise<[Question[], number]> {
