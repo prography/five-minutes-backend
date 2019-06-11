@@ -1,8 +1,6 @@
+import { EntityRepository } from 'typeorm';
 import { Comment } from '../models/Comment';
 import { BaseRepository } from './base/BaseRepository';
 
-export class CommentRepository extends BaseRepository<Comment> {
-  constructor() {
-    super(Comment);
-  }
-}
+@EntityRepository(Comment)
+export class CommentRepository extends BaseRepository<Comment> {}

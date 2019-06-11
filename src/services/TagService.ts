@@ -14,7 +14,7 @@ export class TagService {
     const newTag = new Tag();
     newTag.name = name;
     newTag.description = description;
-    return this.tagRepository.create(newTag);
+    return this.tagRepository.save(newTag);
   }
 
   getTags(take: number, skip: number): Promise<[Tag[], number]> {
@@ -40,7 +40,7 @@ export class TagService {
     for (let i = 0; i < names.length; i += 1) {
       const tag = results.find(res => res.name === names[i]);
       if (!tag) {
-        results.push(await this.tagRepository.create({ name: names[i], description: '' }));
+        results.push(await this.tagRepository.save({ name: names[i], description: '' }));
       }
     }
     results.sort((tag1, tag2) => names.indexOf(tag2.name) - names.indexOf(tag1.name));
@@ -49,7 +49,7 @@ export class TagService {
 
   // Tag 내용 수정
   update(id: number, tag: Partial<Tag>): Promise<Tag> {
-    return this.tagRepository.update(id, {
+    return this.tagRepository.updateAndGet(id, {
       description: tag.description,
     });
   }

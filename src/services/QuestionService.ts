@@ -29,7 +29,7 @@ export class QuestionService {
     newQuestion.user = user;
     newQuestion.tags = tags;
     // 짊문 생성
-    return this.questionRepository.create(newQuestion);
+    return this.questionRepository.save(newQuestion);
 
   }
 
@@ -41,11 +41,11 @@ export class QuestionService {
     newQuestion.code = questionForm.code;
     newQuestion.tags = tags;
     // 질문 수정
-    return this.questionRepository.create(newQuestion);
+    return this.questionRepository.save(newQuestion);
   }
 
   async updateStatus(id: number, status: QuestionStatus) {
-    return this.questionRepository.update(id, { status });
+    return this.questionRepository.updateAndGet(id, { status });
   }
 
   delete(id: number): Promise<DeleteResult> {
@@ -66,34 +66,34 @@ export class QuestionService {
     const question = <Question>await this.questionRepository.findById(questionId, { relations: this.questionRelations });
     if (question.tagNames.includes(tag.name)) throw Error('ALREADY_EXIST');
     question.tags.push(tag);
-    return this.questionRepository.create(question);
+    return this.questionRepository.save(question);
   }
 
   async removeTag(tag: Tag, questionId: number): Promise<Question> {
     const question = <Question>await this.questionRepository.findById(questionId, { relations: this.questionRelations });
     if (!question.tagNames.includes(tag.name)) throw Error('DOES_NOT_TAGGED');
     question.tags.splice(question.tagNames.indexOf(tag.name), 1);
-    return this.questionRepository.create(question);
+    return this.questionRepository.save(question);
   }
 
   async like(questionId: number, user: User): Promise<Question> {
     const question = <Question>await this.questionRepository.findById(questionId, { relations: this.questionRelations });
     if (question.isLikedUser(user)) {
       question.likedUsers.splice(question.idsOfLikedUsers.indexOf(user.id), 1);
-      return this.questionRepository.create(question);
+      return this.questionRepository.save(question);
     }
     question.likedUsers.push(user);
-    return this.questionRepository.create(question);
+    return this.questionRepository.save(question);
   }
 
   async dislike(questionId: number, user: User): Promise<Question> {
     const question = <Question>await this.questionRepository.findById(questionId, { relations: this.questionRelations });
     if (question.isDislikedUser(user)) {
       question.dislikedUsers.splice(question.idsOfLikedUsers.indexOf(user.id), 1);
-      return this.questionRepository.create(question);
+      return this.questionRepository.save(question);
     }
     question.dislikedUsers.push(user);
-    return this.questionRepository.create(question);
+    return this.questionRepository.save(question);
   }
 
   async getQuestionsByLikedUser(user: User): Promise<[Question[], number]> {

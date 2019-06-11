@@ -24,7 +24,7 @@ export class UserService {
     if (!!userForm.githubUrl) newUser.githubUrl = userForm.githubUrl;
     if (!!userForm.nickname) newUser.nickname = userForm.nickname;
     if (!!userForm.image) newUser.image = userForm.image;
-    return this.userRepository.create(newUser);
+    return this.userRepository.save(newUser);
   }
 
   delete(id: number): Promise<DeleteResult> {
@@ -60,7 +60,7 @@ export class UserService {
     if (!user) throw Error('DOES_NOT_EXIST');
     // 로그인 성공시 token 생성 후 갱신
     const token = AuthHelper.generate({ email, rank: user.rank });
-    return this.userRepository.update(user.id, { token }, { relations: this.userRelations });
+    return this.userRepository.updateAndGet(user.id, { token }, { relations: this.userRelations });
   }
 
   /**
@@ -74,7 +74,7 @@ export class UserService {
     if (!!user) throw Error('DUPLICATE_USER');
     // 패스워드 확인 불일치
     if (userForm.password !== userForm.passwordConfirmation) throw Error('PASSWORDS_ARE_NOT_EQUAL');
-    return this.userRepository.create({
+    return this.userRepository.save({
       tags,
       email: userForm.email,
       password: AuthHelper.hash(userForm.password),
@@ -101,7 +101,7 @@ export class UserService {
    */
   async changePassword(userId: number, password: string, passwordConfirmation: string): Promise<User | undefined> {
     if (password !== passwordConfirmation) throw Error('PASSWORDS_ARE_NOT_EQUAL');
-    return this.userRepository.update(userId, {
+    return this.userRepository.updateAndGet(userId, {
       password,
     });
   }
@@ -109,12 +109,12 @@ export class UserService {
   addTag(user: User, tag: Tag) {
     if (user.tagNames.includes(tag.name)) throw Error('ALREADY_EXIST');
     user.tags.push(tag);
-    return this.userRepository.create(user);
+    return this.userRepository.save(user);
   }
 
   removeTag(user: User, tag: Tag) {
     if (!user.tagNames.includes(tag.name)) throw Error('DOES_NOT_TAGGED');
     user.tags.splice(user.tagNames.indexOf(tag.name), 1);
-    return this.userRepository.create(user);
+    return this.userRepository.save(user);
   }
 }

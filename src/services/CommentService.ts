@@ -26,20 +26,20 @@ export class CommentService {
     newComment.content = content;
     newComment.question = question;
     newComment.user = user;
-    return this.commentRepository.create(newComment);
+    return this.commentRepository.save(newComment);
   }
 
   updateStatus(id: number, status: CommentStatus) {
     const newComment = new Comment();
     newComment.status = status;
-    return this.commentRepository.update(id, newComment);
+    return this.commentRepository.updateAndGet(id, newComment);
   }
 
   update(id: number, commentForm: CommentUpdateDto): Promise<Comment> {
     const newComment = new Comment();
     newComment.codeline = commentForm.codeline;
     newComment.content = commentForm.content;
-    return this.commentRepository.update(id, newComment);
+    return this.commentRepository.updateAndGet(id, newComment);
   }
 
   delete(id: number): Promise<DeleteResult> {
@@ -89,27 +89,27 @@ export class CommentService {
     const comment = <Comment>await this.commentRepository.findById(id, { relations: this.commentRelations });
     if (comment.isLikedUser(user)) {
       comment.likedUsers.splice(comment.idsOfLikedUsers.indexOf(user.id), 1);
-      return this.commentRepository.create(comment);
+      return this.commentRepository.save(comment);
     }
     comment.likedUsers.push(user);
-    return this.commentRepository.create(comment);
+    return this.commentRepository.save(comment);
   }
 
   async dislike(id: number, user: User) {
     const comment = <Comment>await this.commentRepository.findById(id, { relations: this.commentRelations });
     if (comment.isDislikedUser(user)) {
       comment.dislikedUsers.splice(comment.idsOfDislikedUsers.indexOf(user.id), 1);
-      return this.commentRepository.create(comment);
+      return this.commentRepository.save(comment);
     }
     comment.dislikedUsers.push(user);
-    return this.commentRepository.create(comment);
+    return this.commentRepository.save(comment);
   }
 
   async resolve(id: number, user: User) {
     const comment = <Comment>await this.commentRepository.findById(id, { relations: ['question', 'question.user'] });
     if (comment.question.user.id !== user.id) throw Error('NO_WRITER');
     if (comment.status !== CommentStatus.RESOLVE) {
-      return this.commentRepository.update(id, { status: CommentStatus.RESOLVE });
+      return this.commentRepository.updateAndGet(id, { status: CommentStatus.RESOLVE });
     }
     return comment;
   }
