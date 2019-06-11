@@ -1,9 +1,9 @@
 import { Authorized, Body, BodyParam, CurrentUser, Delete, Get, JsonController, Param, Post, Put, QueryParam, UseInterceptor } from 'routing-controllers';
 import { CommentCreateDto } from '../Dto/CommentCreateDto';
 import { QuestionCreateDto } from '../Dto/QuestionCreateDto';
-import { QuestionUpdateDto } from '../Dto/QuestionUpdateDto';
 import { EntityInterceptor } from '../interceptors/EntityInterceptor';
 import { PaginationInterceptor } from '../interceptors/PaginationInterceptor';
+import { QuestionInterceptor } from '../interceptors/QuestionInterceptor';
 import { QuestionPaginationInterceptor } from '../interceptors/QuestionPaginationInterceptor';
 import { QuestionStatus } from '../models/Question';
 import { User } from '../models/User';
@@ -60,6 +60,7 @@ export class QuestionController  {
 
   @Get('/:id')
   @UseInterceptor(EntityInterceptor)
+  @UseInterceptor(QuestionInterceptor)
   getQuestion(@Param('id') id: number) {
     return new QuestionService().getQuestionById(id);
   }
@@ -77,6 +78,17 @@ export class QuestionController  {
       perPage: totalCount,
       count: totalCount,
     };
+  }
+
+  @Authorized()
+  @Put('/:id/comments/:commentId/correct')
+  @UseInterceptor(EntityInterceptor)
+  correctCodeByComment(
+    @Param('id') id: number,
+    @Param('commentId') commentId: number,
+    @BodyParam('code', { required: true }) code: string,
+  ) {
+    return new QuestionService().correctQuestion(id, code, commentId);
   }
 
   @Authorized()
@@ -107,17 +119,17 @@ export class QuestionController  {
     return new QuestionService().dislike(id, user);
   }
 
-  @Authorized()
-  @Put('/:id')
-  @UseInterceptor(EntityInterceptor)
-  async updateQuestion(@Param('id') id: number, @Body() question: QuestionUpdateDto) {
-    const tags = await new TagService().getOrCreateByNames(question.tags);
-    return new QuestionService().update(
-      id,
-      question,
-      tags,
-    );
-  }
+  // @Authorized()
+  // @Put('/:id')
+  // @UseInterceptor(EntityInterceptor)
+  // async updateQuestion(@Param('id') id: number, @Body() question: QuestionUpdateDto) {
+  //   const tags = await new TagService().getOrCreateByNames(question.tags);
+  //   return new QuestionService().update(
+  //     id,
+  //     question,
+  //     tags,
+  //   );
+  // }
 
   @Authorized()
   @Delete('/:id')
