@@ -1,4 +1,4 @@
-import { DeleteResult, getRepository, In } from 'typeorm';
+import { DeleteResult, getCustomRepository, getRepository, In } from 'typeorm';
 import { CommentUpdateDto } from '../Dto/CommentUpdateDto';
 import { Comment, CommentStatus } from '../models/Comment';
 import { Question } from '../models/Question';
@@ -13,8 +13,8 @@ export class CommentService {
   private commentRelations = ['user', 'dislikedUsers', 'likedUsers', 'question'];
 
   constructor() {
-    this.commentRepository = new CommentRepository();
-    this.questionRepository = new QuestionRepository();
+    this.commentRepository = getCustomRepository(CommentRepository);
+    this.questionRepository = getCustomRepository(QuestionRepository);
   }
 
   async create(

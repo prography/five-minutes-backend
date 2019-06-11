@@ -1,4 +1,4 @@
-import { DeleteResult, FindConditions } from 'typeorm';
+import { DeleteResult, FindConditions, getCustomRepository } from 'typeorm';
 import { UserCreateDto } from '../Dto/UserCreateDto';
 import { UserUpdateDto } from '../Dto/UserUpdateDto';
 import { Tag } from '../models/Tag';
@@ -13,7 +13,7 @@ export class UserService {
   private userRelations = ['tags'];
 
   constructor() {
-    this.userRepository = new UserRepository();
+    this.userRepository = getCustomRepository(UserRepository);
   }
 
   async update(id: number, userForm: UserUpdateDto, tags: Tag[]) {

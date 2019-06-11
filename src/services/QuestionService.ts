@@ -1,7 +1,9 @@
-import { DeleteResult, FindConditions, getRepository, In, MoreThan } from 'typeorm';
+import { DeleteResult, FindConditions, getCustomRepository, getRepository, In, MoreThan } from 'typeorm';
 import { QuestionUpdateDto } from '../Dto/QuestionUpdateDto';
+import { CommentStatus } from '../models/Comment';
 import { Question, QuestionStatus } from '../models/Question';
 import { User } from '../models/User';
+import { CommentRepository } from '../repositories/CommentRepository';
 import { QuestionRepository } from '../repositories/QuestionRepository';
 import { QueryHelper } from '../utils/QueryHelper';
 import { Tag } from './../models/Tag';
@@ -9,6 +11,7 @@ import { Tag } from './../models/Tag';
 export class QuestionService {
 
   private questionRepository: QuestionRepository;
+  private commentRepository: CommentRepository;
 
   private questionRelations = [
     'tags', 'likedUsers', 'dislikedUsers', 'user',
@@ -16,7 +19,8 @@ export class QuestionService {
   ];
 
   constructor() {
-    this.questionRepository = new QuestionRepository();
+    this.questionRepository = getCustomRepository(QuestionRepository);
+    this.commentRepository = getCustomRepository(CommentRepository);
   }
 
   async create(user: User, subject: string, content: string, code: string, language: string, tags: Tag[]): Promise<Question> {
@@ -42,6 +46,13 @@ export class QuestionService {
     newQuestion.tags = tags;
     // 질문 수정
     return this.questionRepository.save(newQuestion);
+  }
+
+  async correctQuestion(id: number, code: string, commentId: number) {
+    // 코드 삽입
+    await this.questionRepository.update(id, { code });
+    // 질문 해결 표시
+    return this.commentRepository.updateAndGet(commentId, { status: CommentStatus.RESOLVE });
   }
 
   async updateStatus(id: number, status: QuestionStatus) {

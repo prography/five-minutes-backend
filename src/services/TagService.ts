@@ -1,4 +1,4 @@
-import { DeleteResult, In, Like } from 'typeorm';
+import { DeleteResult, getCustomRepository, In, Like } from 'typeorm';
 import { Tag } from '../models/Tag';
 import { TagRepository } from '../repositories/TagRepository';
 
@@ -7,7 +7,7 @@ export class TagService {
   private tagRepository: TagRepository;
 
   constructor() {
-    this.tagRepository = new TagRepository();
+    this.tagRepository = getCustomRepository(TagRepository);
   }
 
   create(name : string, description: string): Promise<Tag> {
