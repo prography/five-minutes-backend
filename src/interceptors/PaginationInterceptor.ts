@@ -26,7 +26,7 @@ export class PaginationInterceptor implements InterceptorInterface {
       prevPage: page > 1 ? this.createQuery(url, { ...baseQuery, page: page - 1 }) : null,
       nextPage: page < lastPage ? this.createQuery(url, { ...baseQuery, page: page + 1 }) : null,
       currentPage: this.createQuery(url, { ...baseQuery }),
-      items: ObjectManager.deleteValuesByKeys(result.items, ['token']),
+      items: ObjectManager.deleteValuesByKeys(result.items, ['token', 'password']),
     };
   }
 
