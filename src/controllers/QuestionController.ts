@@ -1,6 +1,7 @@
 import { Authorized, Body, BodyParam, CurrentUser, Delete, Get, JsonController, Param, Post, Put, QueryParam, UseInterceptor } from 'routing-controllers';
 import { CommentCreateDto } from '../Dto/CommentCreateDto';
 import { QuestionCreateDto } from '../Dto/QuestionCreateDto';
+import { QuestionUpdateDto } from '../Dto/QuestionUpdateDto';
 import { EntityInterceptor } from '../interceptors/EntityInterceptor';
 import { PaginationInterceptor } from '../interceptors/PaginationInterceptor';
 import { QuestionInterceptor } from '../interceptors/QuestionInterceptor';
@@ -119,17 +120,17 @@ export class QuestionController  {
     return new QuestionService().dislike(id, user);
   }
 
-  // @Authorized()
-  // @Put('/:id')
-  // @UseInterceptor(EntityInterceptor)
-  // async updateQuestion(@Param('id') id: number, @Body() question: QuestionUpdateDto) {
-  //   const tags = await new TagService().getOrCreateByNames(question.tags);
-  //   return new QuestionService().update(
-  //     id,
-  //     question,
-  //     tags,
-  //   );
-  // }
+  @Authorized()
+  @Put('/:id')
+  @UseInterceptor(EntityInterceptor)
+  async updateQuestion(@Param('id') id: number, @Body() question: QuestionUpdateDto) {
+    const tags = await new TagService().getOrCreateByNames(question.tags);
+    return new QuestionService().update(
+      id,
+      question,
+      tags,
+    );
+  }
 
   @Authorized()
   @Delete('/:id')

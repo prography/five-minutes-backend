@@ -42,7 +42,6 @@ export class QuestionService {
     const newQuestion = <Question>await this.questionRepository.findById(id);
     newQuestion.subject = questionForm.subject;
     newQuestion.content = questionForm.content;
-    newQuestion.code = questionForm.code;
     newQuestion.tags = tags;
     // 질문 수정
     return this.questionRepository.save(newQuestion);
