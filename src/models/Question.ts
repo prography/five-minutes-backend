@@ -1,10 +1,11 @@
-import { Column, Entity, JoinTable, ManyToMany, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { Column,Entity,JoinTable,ManyToMany,ManyToOne,OneToMany,PrimaryGeneratedColumn } from 'typeorm';
 import { Base } from './Base';
 import { Comment } from './Comment';
 import { Tag } from './Tag';
 import { User } from './User';
 
 export enum QuestionStatus {
+  WAIT = 'WAIT',
   PENDING = 'PENDING',
   RESOLVE = 'RESOLVE',
 }
@@ -20,7 +21,7 @@ export class Question extends Base {
   language!: string;
   @Column({ type: 'text' })
   code!: string;
-  @Column({ type: 'enum', enum: QuestionStatus, default: QuestionStatus.PENDING })
+  @Column({ type: 'enum', enum: QuestionStatus, default: QuestionStatus.WAIT })
   status!: QuestionStatus;
   @ManyToOne(_ => User)
   user!: User;

@@ -1,7 +1,7 @@
-import { DeleteResult, FindConditions, getCustomRepository, getRepository, In, MoreThan } from 'typeorm';
+import { DeleteResult,FindConditions,getCustomRepository,getRepository,In,MoreThan } from 'typeorm';
 import { QuestionUpdateDto } from '../Dto/QuestionUpdateDto';
 import { CommentStatus } from '../models/Comment';
-import { Question, QuestionStatus } from '../models/Question';
+import { Question,QuestionStatus } from '../models/Question';
 import { User } from '../models/User';
 import { CommentRepository } from '../repositories/CommentRepository';
 import { QuestionRepository } from '../repositories/QuestionRepository';
@@ -40,6 +40,7 @@ export class QuestionService {
   async update(id: number, questionForm: QuestionUpdateDto, tags: Tag[]): Promise<Question> {
     // 질문 객체 생성
     const newQuestion = <Question>await this.questionRepository.findById(id);
+    if(newQuestion.status == QuestionStatus.PENDING) throw Error('CANT_EDIT');
     newQuestion.subject = questionForm.subject;
     newQuestion.content = questionForm.content;
     newQuestion.tags = tags;
