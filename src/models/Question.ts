@@ -1,4 +1,4 @@
-import { Column,Entity,JoinTable,ManyToMany,ManyToOne,OneToMany,PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, JoinTable, ManyToMany, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { Base } from './Base';
 import { Comment } from './Comment';
 import { Tag } from './Tag';
