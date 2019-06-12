@@ -24,7 +24,7 @@ export class ObjectManager {
       (acc: any, key: string) => {
         const isObject = typeof obj[key] === 'object';
         // undefined는 삭제
-        if (!obj[key]) {
+        if (obj[key] === undefined || obj[key] === null) {
           delete obj[key];
           return acc;
         }

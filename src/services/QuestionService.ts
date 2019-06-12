@@ -40,6 +40,7 @@ export class QuestionService {
   async update(id: number, questionForm: QuestionUpdateDto, tags: Tag[]): Promise<Question> {
     // 질문 객체 생성
     const newQuestion = <Question>await this.questionRepository.findById(id);
+    if (newQuestion.status === QuestionStatus.PENDING) throw Error('CANT_EDIT');
     newQuestion.subject = questionForm.subject;
     newQuestion.content = questionForm.content;
     newQuestion.tags = tags;
