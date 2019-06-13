@@ -36,8 +36,10 @@ export class CommentService {
     return this.commentRepository.updateAndGet(id, newComment);
   }
 
-  update(id: number, commentForm: CommentUpdateDto): Promise<Comment> {
-    const newComment = new Comment();
+  async update(id: number, commentForm: CommentUpdateDto): Promise<Comment> {
+    const newComment = await this.commentRepository.findById(id);
+    if (!newComment) throw Error('NO_COMMNET');
+    if (![CommentStatus.PENDING, CommentStatus.WAIT].includes(newComment.status)) throw Error('CAN_NOT_MODIFY');
     newComment.codeline = commentForm.codeline;
     newComment.codestring = commentForm.codestring;
     newComment.content = commentForm.content;
