@@ -146,8 +146,7 @@ export class QuestionController  {
   async createComment(@CurrentUser() user: User, @Param('id') questionId: number, @Body() comment: CommentCreateDto) {
     const newComment = await new CommentService().create(
       user,
-      comment.content,
-      comment.codeline,
+      comment,
       questionId,
     );
     return {

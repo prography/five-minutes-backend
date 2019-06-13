@@ -29,6 +29,8 @@ export class Comment extends Base {
   user!: User;
   @Column()
   codeline!: number;
+  @Column({ length: 200 })
+  codestring!: string;
   @ManyToMany(_ => User, user => user.likedComments)
   @JoinTable({ name: 'comment_liked_users' })
   likedUsers!: User[];
