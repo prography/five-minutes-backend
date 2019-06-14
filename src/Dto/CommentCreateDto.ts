@@ -11,4 +11,7 @@ export class CommentCreateDto {
   @IsNumber()
   @IsNotEmpty()
   codeline!: number;
+  @IsString()
+  @IsNotEmpty()
+  codestring!: string;
 }
