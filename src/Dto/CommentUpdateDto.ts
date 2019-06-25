@@ -7,4 +7,7 @@ export class CommentUpdateDto {
   @IsNumber()
   @IsNotEmpty()
   codeline!: number;
+  @IsNumber()
+  @IsNotEmpty()
+  codestring!: string;
 }
