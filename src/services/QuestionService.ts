@@ -87,6 +87,10 @@ export class QuestionService {
     return this.questionRepository.save(question);
   }
 
+  async addView(id: number): Promise<void> {
+    await this.questionRepository.increment({ id }, 'view', 1);
+  }
+
   async like(questionId: number, user: User): Promise<Question> {
     const question = <Question>await this.questionRepository.findById(questionId, { relations: this.questionRelations });
     if (question.isLikedUser(user)) {
