@@ -21,6 +21,8 @@ export class Question extends Base {
   language!: string;
   @Column({ type: 'text' })
   code!: string;
+  @Column({ default: 0 })
+  view!: number;
   @Column({ type: 'enum', enum: QuestionStatus, default: QuestionStatus.WAIT })
   status!: QuestionStatus;
   @ManyToOne(_ => User)
