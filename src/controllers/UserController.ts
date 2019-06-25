@@ -1,6 +1,7 @@
 import { Authorized, Body, BodyParam, CurrentUser, Delete, Get, JsonController, Param, Put, QueryParam, UseInterceptor } from 'routing-controllers';
 import { EntityInterceptor } from '../interceptors/EntityInterceptor';
 import { PaginationInterceptor } from '../interceptors/PaginationInterceptor';
+import { QuestionPaginationInterceptor } from '../interceptors/QuestionPaginationInterceptor';
 import { User } from '../models/User';
 import { CommentService } from '../services/CommentService';
 import { QuestionService } from '../services/QuestionService';
@@ -51,6 +52,7 @@ export class UserController {
 
   @Get('/:id/questions')
   @UseInterceptor(PaginationInterceptor)
+  @UseInterceptor(QuestionPaginationInterceptor)
   async getQuestionsByUser(@Param('id') id: number) {
     const user = await new UserService().getUserById(id);
     if (!user) throw Error('NO_DOES_NOT_EXIST');
@@ -75,7 +77,8 @@ export class UserController {
 
   @Get('/:id/liked-questions')
   @UseInterceptor(PaginationInterceptor)
-async getLikedQuestionsByUser(@Param('id') id: number) {
+  @UseInterceptor(QuestionPaginationInterceptor)
+  async getLikedQuestionsByUser(@Param('id') id: number) {
     const user = await new UserService().getUserById(id);
     if (!user) throw Error('NO_DOES_NOT_EXIST');
     const [items, totalCount] = await new QuestionService().getQuestionsByLikedUser(user);

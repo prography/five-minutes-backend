@@ -1,6 +1,6 @@
 import { Authorized, CurrentUser, Get, JsonController, UseInterceptor } from 'routing-controllers';
 import { EntityInterceptor } from '../interceptors/EntityInterceptor';
-import { PaginationInterceptor } from '../interceptors/PaginationInterceptor';
+import { QuestionPaginationInterceptor } from '../interceptors/QuestionPaginationInterceptor';
 import { User } from '../models/User';
 import { CommentService } from '../services/CommentService';
 import { QuestionService } from '../services/QuestionService';
@@ -28,6 +28,7 @@ export class MeController {
   }
 
   @Get('/questions')
+  @UseInterceptor(QuestionPaginationInterceptor)
   async getMyQuestions(@CurrentUser({ required: true }) user: User) {
     const [items, totalCount] = await new QuestionService().getQuestionsByUser(user);
     return {
@@ -46,7 +47,7 @@ export class MeController {
   }
 
   @Get('/liked-questions')
-  @UseInterceptor(PaginationInterceptor)
+  @UseInterceptor(QuestionPaginationInterceptor)
   async getMyLikedQuestions(@CurrentUser({ required: true }) user: User) {
     const [items, totalCount] = await new QuestionService().getQuestionsByLikedUser(user);
     return {
