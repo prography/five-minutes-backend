@@ -62,8 +62,10 @@ export class QuestionController  {
   @Get('/:id')
   @UseInterceptor(EntityInterceptor)
   @UseInterceptor(QuestionInterceptor)
-  getQuestion(@Param('id') id: number) {
-    return new QuestionService().getQuestionById(id);
+  async getQuestion(@Param('id') id: number) {
+    const questionService = new QuestionService();
+    await questionService.addView(id);
+    return await questionService.getQuestionById(id);
   }
 
   @Get('/:id/comments')
