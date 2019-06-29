@@ -64,8 +64,9 @@ export class QuestionController  {
   @UseInterceptor(QuestionInterceptor)
   async getQuestion(@Param('id') id: number) {
     const questionService = new QuestionService();
-    await questionService.addView(id);
-    return await questionService.getQuestionById(id);
+    const result = await questionService.getQuestionById(id);
+    await questionService.incrementHits(id);
+    return result;
   }
 
   @Get('/:id/comments')

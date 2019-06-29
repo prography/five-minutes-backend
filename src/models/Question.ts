@@ -22,7 +22,7 @@ export class Question extends Base {
   @Column({ type: 'text' })
   code!: string;
   @Column({ default: 0 })
-  view!: number;
+  hits!: number;
   @Column({ type: 'enum', enum: QuestionStatus, default: QuestionStatus.WAIT })
   status!: QuestionStatus;
   @ManyToOne(_ => User)
