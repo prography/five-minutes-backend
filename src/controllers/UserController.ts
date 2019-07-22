@@ -53,10 +53,20 @@ export class UserController {
   @Get('/:id/questions')
   @UseInterceptor(PaginationInterceptor)
   @UseInterceptor(QuestionPaginationInterceptor)
-  async getQuestionsByUser(@Param('id') id: number) {
+  async getQuestionsByUser(
+    @Param('id') id: number,
+    @QueryParam('page', { required: true }) page: number,
+    @QueryParam('perPage', { required: true }) perPage: number,
+    @QueryParam('lastId') lastId?: number,
+    @QueryParam('subject') subject?: string,
+    @QueryParam('language') language?: string,
+    @QueryParam('tags') tagNames?: string[],
+  ) {
+    const tags = await new TagService().getOrCreateByNames(tagNames || []);
     const user = await new UserService().getUserById(id);
     if (!user) throw Error('NO_DOES_NOT_EXIST');
-    const [items, totalCount] = await new QuestionService().getQuestionsByUser(user);
+    const [items, totalCount] = await new QuestionService().getQuestions(
+      perPage, (page - 1) * perPage, { lastId, subject, language, tags, userId: id });
     return {
       items,
       totalCount,

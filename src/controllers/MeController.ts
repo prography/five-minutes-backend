@@ -1,9 +1,10 @@
-import { Authorized, CurrentUser, Get, JsonController, UseInterceptor } from 'routing-controllers';
+import { Authorized, CurrentUser, Get, JsonController, QueryParam, UseInterceptor } from 'routing-controllers';
 import { EntityInterceptor } from '../interceptors/EntityInterceptor';
 import { QuestionPaginationInterceptor } from '../interceptors/QuestionPaginationInterceptor';
 import { User } from '../models/User';
 import { CommentService } from '../services/CommentService';
 import { QuestionService } from '../services/QuestionService';
+import { TagService } from '../services/TagService';
 
 @Authorized()
 @JsonController('/me')
@@ -29,8 +30,18 @@ export class MeController {
 
   @Get('/questions')
   @UseInterceptor(QuestionPaginationInterceptor)
-  async getMyQuestions(@CurrentUser({ required: true }) user: User) {
-    const [items, totalCount] = await new QuestionService().getQuestionsByUser(user);
+  async getMyQuestions(
+    @CurrentUser({ required: true }) user: User,
+    @QueryParam('page', { required: true }) page: number,
+    @QueryParam('perPage', { required: true }) perPage: number,
+    @QueryParam('lastId') lastId?: number,
+    @QueryParam('subject') subject?: string,
+    @QueryParam('language') language?: string,
+    @QueryParam('tags') tagNames?: string[],
+  ) {
+    const tags = await new TagService().getOrCreateByNames(tagNames || []);
+    const [items, totalCount] = await new QuestionService().getQuestions(
+      perPage, (page - 1) * perPage, { lastId, subject, language, tags, userId: user.id });
     return {
       items,
       totalCount,

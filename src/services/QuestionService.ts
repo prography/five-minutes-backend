@@ -142,13 +142,20 @@ export class QuestionService {
   async getQuestions(
     take: number,
     skip: number,
-    options: { lastId?: number, subject?: string, tags?: Tag[], language?: string },
+    options: {
+      lastId?: number,
+      subject?: string,
+      tags?: Tag[],
+      language?: string,
+      userId?: number,
+    },
   ): Promise<[Partial<Question>[], number]> {
     const questionQueryBuilder = new QueryHelper<Question>(Question, 'question');
 
     if (options.lastId) questionQueryBuilder.andWhere('question.id > :id', { id: options.lastId });
     if (options.subject) questionQueryBuilder.andWhere('question.subject LIKE :subject', { subject: `%${options.subject}%` });
     if (options.language) questionQueryBuilder.andWhere('question.language = :language', { language: options.language });
+    if (options.userId) questionQueryBuilder.andWhere('question.user_id IN (:userId)', { userId: options.userId });
     if (options.tags && options.tags.length) {
       const tags: any[] = await getRepository(Question)
         .query(
@@ -186,9 +193,5 @@ export class QuestionService {
     if (lastId) where.id = MoreThan(lastId);
     return this.questionRepository.findWithCount({
       take, skip, where: { ...where, 'tags.name': In(tags.map(tag => tag.name)) }, relations: this.questionRelations });
-  }
-
-  getQuestionsByUser(user : User): Promise<[Question[], number]> {
-    return this.questionRepository.findWithCount({ where: { user } });
   }
 }

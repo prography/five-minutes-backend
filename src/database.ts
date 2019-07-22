@@ -10,6 +10,7 @@ export async function connect() {
       ...<MysqlConnectionOptions>options,
       namingStrategy: new DatabaseNamingStrategy(),
       charset: 'utf8mb4',
+      entities: [`${__dirname}/models/*.[tj]s`],
     });
   });
 }
