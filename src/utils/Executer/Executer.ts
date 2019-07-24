@@ -8,6 +8,7 @@ export enum ExecutableFile {
   C = 'C',
   JAVA = 'JAVA',
 }
+
 export class Executer {
   private filename: string = '';
   private type: string = '';
@@ -23,22 +24,27 @@ export class Executer {
   public execute(text: string, type: ExecutableFile) {
     this.saveFile(text, this.getExecute(type));
     let result = '';
-    switch (type) {
-      case ExecutableFile.C:
-        result = this.runC();
-        break;
-      case ExecutableFile.JAVA:
-        result = this.runJava();
-        break;
-      case ExecutableFile.PYTHON2:
-        result = this.runPython2();
-        break;
-      case ExecutableFile.PYTHON3:
-        result = this.runPython3();
-        break;
+    try {
+      switch (type) {
+        case ExecutableFile.C:
+          result = this.runC();
+          break;
+        case ExecutableFile.JAVA:
+          result = this.runJava();
+          break;
+        case ExecutableFile.PYTHON2:
+          result = this.runPython2();
+          break;
+        case ExecutableFile.PYTHON3:
+          result = this.runPython3();
+          break;
+      }
+    } catch (e) {
+      console.error('error', e);
+    } finally {
+      this.removeFile();
+      return result;
     }
-    this.removeFile();
-    return result;
   }
 
   private getExecute(type: ExecutableFile): string {
@@ -60,14 +66,14 @@ export class Executer {
   }
 
   private runJava() {
-    const filename = 'test.java';
+    const filename = 'Main.java';
     fs.mkdirSync(this.executableFilePath);
     fs.copyFileSync(`${this.sourceFilePath}`, `${this.executableFilePath}/${filename}`);
     childProcess.execSync(`javac ${this.executableFilePath}/${filename}`);
     const files = fs.readdirSync(this.executableFilePath);
-    const compiledFile = files.find(file => /\.class/.test(file) && file !== filename);
-    const result = childProcess.execSync(`java ${this.executableFilePath}/${compiledFile}`);
-    fs.rmdirSync(this.executableFilePath);
+    const compiledFile = files.find(file => /\.class/.test(file) && file !== filename) || '';
+    const result = childProcess.execSync(`java -cp ${this.executableFilePath} ${compiledFile.split('.')[0]}`);
+    Executer.removeDir(this.executableFilePath);
     return result.toString();
   }
 
@@ -88,7 +94,19 @@ export class Executer {
   }
 
   private removeFile() {
-    fs.unlinkSync(`${this.executableFilePath}`);
-    fs.unlinkSync(`${this.sourceFilePath}`);
+    if (fs.existsSync(this.executableFilePath)) {
+      fs.unlinkSync(this.executableFilePath);
+    }
+    if (fs.existsSync(this.sourceFilePath)) {
+      fs.unlinkSync(this.sourceFilePath);
+    }
+  }
+
+  private static removeDir(path: string) {
+    if (fs.existsSync(path)) {
+      const files = fs.readdirSync(path);
+      files.forEach(file => fs.unlinkSync(`${path}/${file}`));
+      fs.rmdirSync(path);
+    }
   }
 }
