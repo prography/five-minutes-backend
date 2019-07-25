@@ -11,7 +11,7 @@ ARG PROJECT_DIR=/prography/five-minutes/backend
 ##################################################
 RUN apt update
 RUN apt upgrade -y
-RUN apt install apt install default-jre -y
+RUN apt install default-jre -y
 RUN apt install default-jdk -y
 
 ##################################################
