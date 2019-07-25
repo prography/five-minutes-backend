@@ -3,12 +3,12 @@ import fs from 'fs';
 import { AuthHelper } from '../AuthHelper';
 
 export enum ExecutableFile {
-  PYTHON2 = 'PYTHON2',
-  PYTHON3 = 'PYTHON3',
-  C = 'C',
-  JAVA = 'JAVA',
-  NODEJS = 'NODEJS',
-  TYPESCRIPT = 'TYPESCRIPT',
+  PYTHON2 = 'python2',
+  PYTHON3 = 'python3',
+  C = 'c',
+  JAVA = 'java',
+  NODEJS = 'nodejs',
+  TYPESCRIPT = 'typescript',
 }
 
 export class Executer {
