@@ -15,7 +15,7 @@ export class PaginationInterceptor implements InterceptorInterface {
     const page = result.page || 1;
     const url = `${action.request.headers.host}${action.request.path}`;
     const baseQuery = { page, perPage: result.perPage };
-    const lastPage = Math.ceil(result.totalCount / result.perPage);
+    const lastPage = Math.ceil((result.totalCount / result.perPage) || page);
     return {
       page,
       totalCount: result.totalCount,
