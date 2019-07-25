@@ -15,14 +15,26 @@ test('C compile and run', () => {
   expect(output).toEqual('Hello, World!\n');
 });
 
-test('Python2 compile and run', () => {
+test('Python2 run', () => {
   const text = fs.readFileSync(`${__dirname}/test.py`, { encoding: 'utf8' });
   const output = executer.execute(text, ExecutableFile.PYTHON2);
   expect(output).toEqual('Hello, World!\n');
 });
 
-test('Python3 compile and run', () => {
+test('Python3 run', () => {
   const text = fs.readFileSync(`${__dirname}/test.py`, { encoding: 'utf8' });
   const output = executer.execute(text, ExecutableFile.PYTHON3);
+  expect(output).toEqual('Hello, World!\n');
+});
+
+test('NodeJs run', () => {
+  const text = fs.readFileSync(`${__dirname}/test.js`, { encoding: 'utf8' });
+  const output = executer.execute(text, ExecutableFile.NODEJS);
+  expect(output).toEqual('Hello, World!\n');
+});
+
+test('Typescript compile and run', () => {
+  const text = fs.readFileSync(`${__dirname}/test.ts`, { encoding: 'utf8' });
+  const output = executer.execute(text, ExecutableFile.TYPESCRIPT);
   expect(output).toEqual('Hello, World!\n');
 });

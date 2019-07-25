@@ -7,6 +7,8 @@ export enum ExecutableFile {
   PYTHON3 = 'PYTHON3',
   C = 'C',
   JAVA = 'JAVA',
+  NODEJS = 'NODEJS',
+  TYPESCRIPT = 'TYPESCRIPT',
 }
 
 export class Executer {
@@ -38,6 +40,12 @@ export class Executer {
         case ExecutableFile.PYTHON3:
           result = this.runPython3();
           break;
+        case ExecutableFile.NODEJS:
+          result = this.runNodeJs();
+          break;
+        case ExecutableFile.TYPESCRIPT:
+          result = this.runTypescript();
+          break;
       }
     } catch (e) {
       console.error('error', e);
@@ -56,6 +64,10 @@ export class Executer {
       case ExecutableFile.PYTHON2:
       case ExecutableFile.PYTHON3:
         return 'py';
+      case ExecutableFile.NODEJS:
+        return 'js';
+      case ExecutableFile.TYPESCRIPT:
+        return 'ts';
     }
   }
 
@@ -87,6 +99,16 @@ export class Executer {
     return result.toString();
   }
 
+  private runTypescript() {
+    const result = childProcess.execSync(`npx ts-node ${this.sourceFilePath}`);
+    return result.toString();
+  }
+
+  private runNodeJs() {
+    const result = childProcess.execSync(`node ${this.sourceFilePath}`);
+    return result.toString();
+  }
+
   private saveFile(text: string, type: string) {
     this.filename = AuthHelper.hash(text);
     this.type = type;
@@ -94,11 +116,17 @@ export class Executer {
   }
 
   private removeFile() {
-    if (fs.existsSync(this.executableFilePath)) {
-      fs.unlinkSync(this.executableFilePath);
-    }
-    if (fs.existsSync(this.sourceFilePath)) {
-      fs.unlinkSync(this.sourceFilePath);
+    this.removePath(this.executableFilePath);
+    this.removePath(this.sourceFilePath);
+  }
+
+  private removePath(path: string) {
+    if (fs.existsSync(path)) {
+      if (fs.lstatSync(path).isDirectory()) {
+        Executer.removeDir(path);
+      } else {
+        fs.unlinkSync(path);
+      }
     }
   }
 
