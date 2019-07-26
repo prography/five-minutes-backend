@@ -1,7 +1,7 @@
 // import { ObjectManager } from './ObjectManager';
 import fs from 'fs';
 import { Executer } from './Executer';
-import { ExecutableFile } from './Executer/Executer';
+import { ExecutableLanguage } from './Executer/Executer';
 
 // const a = {
 //   a: 1,
@@ -26,5 +26,5 @@ import { ExecutableFile } from './Executer/Executer';
 
 const executer = new Executer();
 const text = fs.readFileSync(`${__dirname}/test.java`, { encoding: 'utf8' });
-const output = executer.execute(text, ExecutableFile.JAVA);
+const output = executer.execute(text, ExecutableLanguage.JAVA);
 console.log(output);
