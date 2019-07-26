@@ -34,8 +34,9 @@ export module ExecutableLanguage {
   export function getExecute(type: ExecutableLanguage): string {
     switch (type) {
       case ExecutableLanguage.C:
-      case ExecutableLanguage.CPP:
         return 'c';
+      case ExecutableLanguage.CPP:
+        return 'cpp';
       case ExecutableLanguage.JAVA:
         return 'java';
       case ExecutableLanguage.PYTHON:
@@ -54,98 +55,130 @@ export module ExecutableLanguage {
 export class Executer {
   private filename: string = '';
   private type: string = '';
+  private testName: string = 'test';
+  private readonly timeout = 1000;
 
   private get sourceFilePath(): string {
-    return `${this.ExecutableLanguagePath}.${this.type}`;
+    return `${this.dirPath}/${this.testName}.${this.type}`;
   }
 
-  private get ExecutableLanguagePath(): string {
+  private get executableFilePath(): string {
+    return `${this.dirPath}/${this.testName}`;
+  }
+
+  private get dirPath(): string {
     return `${__dirname}/${this.filename}`;
   }
 
-  public execute(text: string, type: ExecutableLanguage): string | any {
+  public async execute(text: string, type: ExecutableLanguage): Promise<string[]> {
     this.saveFile(text, ExecutableLanguage.getExecute(type));
-    let result = '';
+    let result: string[] = [];
     try {
       switch (type) {
         case ExecutableLanguage.C:
         case ExecutableLanguage.CPP:
-          result = this.runC();
+          result = await this.runC();
           break;
         case ExecutableLanguage.JAVA:
-          result = this.runJava();
+          result = await this.runJava();
           break;
         case ExecutableLanguage.PYTHON2:
-          result = this.runPython2();
+          result = await this.runPython2();
           break;
         case ExecutableLanguage.PYTHON:
         case ExecutableLanguage.PYTHON3:
-          result = this.runPython3();
+          result = await this.runPython3();
           break;
         case ExecutableLanguage.NODEJS:
         case ExecutableLanguage.JAVASCRIPT:
-          result = this.runNodeJs();
+          result = await this.runNodeJs();
           break;
         case ExecutableLanguage.TYPESCRIPT:
-          result = this.runTypescript();
+          result = await this.runTypescript();
           break;
       }
     } catch (e) {
-      result = e;
+      throw e;
     } finally {
       this.removeFile();
       return result;
     }
   }
 
-  private runC() {
-    childProcess.execSync(`gcc -o ${this.ExecutableLanguagePath} ${this.sourceFilePath}`);
-    const result = childProcess.execSync(`${this.ExecutableLanguagePath}`, { timeout: 10000 });
-    return result.toString();
+  private async runC() {
+    let result: string[] = [];
+    result = result.concat(await this.execSpawn('gcc', ['-o', this.executableFilePath, this.sourceFilePath]));
+    result = result.concat(await this.execSpawn(`${this.executableFilePath}`, []));
+    return result;
   }
 
-  private runJava() {
-    const filename = 'Main.java';
-    fs.mkdirSync(this.ExecutableLanguagePath);
-    fs.copyFileSync(`${this.sourceFilePath}`, `${this.ExecutableLanguagePath}/${filename}`);
-    childProcess.execSync(`javac ${this.ExecutableLanguagePath}/${filename}`);
-    const files = fs.readdirSync(this.ExecutableLanguagePath);
-    const compiledFile = files.find(file => /\.class/.test(file) && file !== filename) || '';
-    const result = childProcess.execSync(`java -cp ${this.ExecutableLanguagePath} ${compiledFile.split('.')[0]}`, {
-      timeout: 10000 });
-    Executer.removeDir(this.ExecutableLanguagePath);
-    return result.toString();
+  private async runJava() {
+    let result: string[] = [];
+    result = result.concat(await this.execSpawn('javac', [this.sourceFilePath], 5000));
+    result = result.concat(await this.execSpawn('java', ['-cp', this.dirPath, this.testName]));
+    return result;
   }
 
-  private runPython2() {
-    const result = childProcess.execSync(`python2 ${this.sourceFilePath}`, { timeout: 10000 });
-    return result.toString();
+  private async runPython2() {
+    const result = await this.execSpawn('python2', [this.sourceFilePath]);
+    return result;
   }
 
-  private runPython3() {
-    const result = childProcess.execSync(`python3 ${this.sourceFilePath}`, { timeout: 10000 });
-    return result.toString();
+  private async runPython3() {
+    const result = await this.execSpawn('python3', [this.sourceFilePath]);
+    return result;
   }
 
-  private runTypescript() {
-    const result = childProcess.execSync(`npx ts-node ${this.sourceFilePath}`, { timeout: 10000 });
-    return result.toString();
+  private async runTypescript() {
+    const result = await this.execSpawn('npx', ['ts-node', this.sourceFilePath], 5000);
+    return result;
   }
 
-  private runNodeJs() {
-    const result = childProcess.execSync(`node ${this.sourceFilePath}`, { timeout: 10000 });
-    return result.toString();
+  private async runNodeJs() {
+    const result = await this.execSpawn('node', [this.sourceFilePath]);
+    return result;
+  }
+
+  private execSpawn(command: string, options: string[], timeout: number = this.timeout): Promise<string[]> {
+    console.log(`${command} ${options.join(' ')}`);
+    return new Promise((resolve, reject) => {
+      const result: string[] = [];
+      const error: string[] = [];
+      const spawn = childProcess.spawn(command, options);
+      const forceQuit = setTimeout(() => { spawn.kill(); }, timeout);
+      spawn.stderr.on('data', (data: Buffer) => {
+        error.push(data.toString());
+      });
+      spawn.stdout.on('data', (data: Buffer) => {
+        result.push(data.toString());
+      });
+      spawn.on('close', (code) => {
+        console.log(`exit with code ${code}`);
+        clearTimeout(forceQuit);
+        if (error.length) {
+          reject(error);
+        }
+        resolve(result);
+      });
+    });
   }
 
   private saveFile(text: string, type: string) {
     this.filename = AuthHelper.hash(text);
     this.type = type;
-    fs.writeFileSync(`${this.sourceFilePath}`, text, 'utf8');
+    this.removePath(this.dirPath);
+    fs.mkdirSync(this.dirPath);
+    if (type === 'java') {
+      const searched = /public\s+class\s+\w+/g.exec(text);
+      if (searched) {
+        this.testName = searched[0].split(' ').slice(-1)[0];
+      }
+    }
+    fs.writeFileSync(this.sourceFilePath, text, 'utf8');
   }
 
   private removeFile() {
-    this.removePath(this.ExecutableLanguagePath);
-    this.removePath(this.sourceFilePath);
+    this.removePath(this.dirPath);
   }
 
   private removePath(path: string) {
