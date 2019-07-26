@@ -4,7 +4,6 @@ import { PaginationInterceptor } from '../interceptors/PaginationInterceptor';
 import { Honor } from '../models/Honor';
 import { HonorService } from '../services/HonorService';
 
-@Authorized()
 @JsonController('/honors')
 export class HonorController {
   @Post()
@@ -25,6 +24,7 @@ export class HonorController {
     };
   }
 
+  @Authorized()
   @Put('/:id')
   @UseInterceptor(EntityInterceptor)
   async update(@Param('id') id: number, @Body() honor: Partial<Honor>) {
@@ -32,6 +32,7 @@ export class HonorController {
     return result;
   }
 
+  @Authorized()
   @Delete('/:id')
   @UseInterceptor(EntityInterceptor)
   async delete(@Param('id') id: number) {

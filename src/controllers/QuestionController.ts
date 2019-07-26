@@ -1,4 +1,4 @@
-import { Authorized, Body, BodyParam, CurrentUser, Delete, Get, JsonController, Param, Post, Put, QueryParam, UseInterceptor } from 'routing-controllers';
+import { Authorized, BadRequestError, Body, BodyParam, CurrentUser, Delete, Get, JsonController, NotFoundError, Param, Post, Put, QueryParam, UseInterceptor } from 'routing-controllers';
 import { CommentCreateDto } from '../Dto/CommentCreateDto';
 import { QuestionCreateDto } from '../Dto/QuestionCreateDto';
 import { QuestionUpdateDto } from '../Dto/QuestionUpdateDto';
@@ -11,6 +11,7 @@ import { User } from '../models/User';
 import { CommentService } from '../services/CommentService';
 import { QuestionService } from '../services/QuestionService';
 import { TagService } from '../services/TagService';
+import { ExecutableLanguage, Executer } from '../utils/Executer/Executer';
 
 @JsonController('/questions')
 export class QuestionController  {
@@ -121,6 +122,19 @@ export class QuestionController  {
   @UseInterceptor(EntityInterceptor)
   dislikeQuestion(@Param('id') id: number, @CurrentUser({ required: true }) user: User) {
     return new QuestionService().dislike(id, user);
+  }
+
+  @Authorized()
+  @Post('/:id/execute')
+  async executeCode(@Param('id') id: number) {
+    const question = await new QuestionService().getQuestionById(id);
+    if (!question) throw new NotFoundError('not found');
+    const language = ExecutableLanguage.getLanguageByString(question.language);
+    if (!language) throw new BadRequestError('cannot run');
+    const result = new Executer().execute(question.code, language);
+    return {
+      result,
+    };
   }
 
   @Authorized()
