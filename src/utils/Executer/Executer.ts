@@ -152,7 +152,6 @@ export class Executer {
         result.push(data.toString());
       });
       spawn.on('close', (code) => {
-        console.log(`exit with code ${code}`);
         clearTimeout(forceQuit);
         if (error.length) {
           reject(error);
