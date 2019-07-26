@@ -140,12 +140,11 @@ export class Executer {
   }
 
   private execSpawn(command: string, options: string[], timeout: number = this.timeout): Promise<string[]> {
-    console.log(`${command} ${options.join(' ')}`);
     return new Promise((resolve, reject) => {
       const result: string[] = [];
       const error: string[] = [];
       const spawn = childProcess.spawn(command, options);
-      const forceQuit = setTimeout(() => { spawn.kill(); }, timeout);
+      const forceQuit = setTimeout(() => { spawn.kill(); resolve(['TIMEOUT']); }, timeout);
       spawn.stderr.on('data', (data: Buffer) => {
         error.push(data.toString());
       });
