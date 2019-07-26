@@ -151,7 +151,7 @@ export class Executer {
       spawn.stdout.on('data', (data: Buffer) => {
         result.push(data.toString());
       });
-      spawn.on('close', (code) => {
+      spawn.on('close', () => {
         clearTimeout(forceQuit);
         if (error.length) {
           reject(error);
