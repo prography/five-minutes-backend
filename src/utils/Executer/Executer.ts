@@ -63,7 +63,7 @@ export class Executer {
     return `${__dirname}/${this.filename}`;
   }
 
-  public execute(text: string, type: ExecutableLanguage) {
+  public execute(text: string, type: ExecutableLanguage): string | any {
     this.saveFile(text, ExecutableLanguage.getExecute(type));
     let result = '';
     try {
@@ -91,7 +91,7 @@ export class Executer {
           break;
       }
     } catch (e) {
-      return e;
+      result = e;
     } finally {
       this.removeFile();
       return result;
@@ -100,7 +100,7 @@ export class Executer {
 
   private runC() {
     childProcess.execSync(`gcc -o ${this.ExecutableLanguagePath} ${this.sourceFilePath}`);
-    const result = childProcess.execSync(`${this.ExecutableLanguagePath}`);
+    const result = childProcess.execSync(`${this.ExecutableLanguagePath}`, { timeout: 10000 });
     return result.toString();
   }
 
@@ -111,28 +111,29 @@ export class Executer {
     childProcess.execSync(`javac ${this.ExecutableLanguagePath}/${filename}`);
     const files = fs.readdirSync(this.ExecutableLanguagePath);
     const compiledFile = files.find(file => /\.class/.test(file) && file !== filename) || '';
-    const result = childProcess.execSync(`java -cp ${this.ExecutableLanguagePath} ${compiledFile.split('.')[0]}`);
+    const result = childProcess.execSync(`java -cp ${this.ExecutableLanguagePath} ${compiledFile.split('.')[0]}`, {
+      timeout: 10000 });
     Executer.removeDir(this.ExecutableLanguagePath);
     return result.toString();
   }
 
   private runPython2() {
-    const result = childProcess.execSync(`python2 ${this.sourceFilePath}`);
+    const result = childProcess.execSync(`python2 ${this.sourceFilePath}`, { timeout: 10000 });
     return result.toString();
   }
 
   private runPython3() {
-    const result = childProcess.execSync(`python3 ${this.sourceFilePath}`);
+    const result = childProcess.execSync(`python3 ${this.sourceFilePath}`, { timeout: 10000 });
     return result.toString();
   }
 
   private runTypescript() {
-    const result = childProcess.execSync(`npx ts-node ${this.sourceFilePath}`);
+    const result = childProcess.execSync(`npx ts-node ${this.sourceFilePath}`, { timeout: 10000 });
     return result.toString();
   }
 
   private runNodeJs() {
-    const result = childProcess.execSync(`node ${this.sourceFilePath}`);
+    const result = childProcess.execSync(`node ${this.sourceFilePath}`, { timeout: 10000 });
     return result.toString();
   }
 
