@@ -2,13 +2,53 @@ import * as childProcess from 'child_process';
 import fs from 'fs';
 import { AuthHelper } from '../AuthHelper';
 
-export enum ExecutableFile {
+export enum ExecutableLanguage {
+  PYTHON = 'python',
   PYTHON2 = 'python2',
   PYTHON3 = 'python3',
   C = 'c',
+  CPP = 'c++',
   JAVA = 'java',
   NODEJS = 'nodejs',
+  JAVASCRIPT = 'javascript',
   TYPESCRIPT = 'typescript',
+}
+
+export module ExecutableLanguage {
+  export function getExecutableLanguages(): ExecutableLanguage[] {
+    return [
+      ExecutableLanguage.C,
+      ExecutableLanguage.CPP,
+      ExecutableLanguage.JAVA,
+      ExecutableLanguage.PYTHON,
+      ExecutableLanguage.PYTHON2,
+      ExecutableLanguage.PYTHON3,
+      ExecutableLanguage.NODEJS,
+      ExecutableLanguage.JAVASCRIPT,
+      ExecutableLanguage.TYPESCRIPT,
+    ];
+  }
+  export function getLanguageByString(language: string): ExecutableLanguage | undefined {
+    return ExecutableLanguage.getExecutableLanguages().find(lang => lang === language.toLowerCase());
+  }
+  export function getExecute(type: ExecutableLanguage): string {
+    switch (type) {
+      case ExecutableLanguage.C:
+      case ExecutableLanguage.CPP:
+        return 'c';
+      case ExecutableLanguage.JAVA:
+        return 'java';
+      case ExecutableLanguage.PYTHON:
+      case ExecutableLanguage.PYTHON2:
+      case ExecutableLanguage.PYTHON3:
+        return 'py';
+      case ExecutableLanguage.NODEJS:
+      case ExecutableLanguage.JAVASCRIPT:
+        return 'js';
+      case ExecutableLanguage.TYPESCRIPT:
+        return 'ts';
+    }
+  }
 }
 
 export class Executer {
@@ -16,76 +56,63 @@ export class Executer {
   private type: string = '';
 
   private get sourceFilePath(): string {
-    return `${this.executableFilePath}.${this.type}`;
+    return `${this.ExecutableLanguagePath}.${this.type}`;
   }
 
-  private get executableFilePath(): string {
+  private get ExecutableLanguagePath(): string {
     return `${__dirname}/${this.filename}`;
   }
 
-  public execute(text: string, type: ExecutableFile) {
-    this.saveFile(text, this.getExecute(type));
+  public execute(text: string, type: ExecutableLanguage) {
+    this.saveFile(text, ExecutableLanguage.getExecute(type));
     let result = '';
     try {
       switch (type) {
-        case ExecutableFile.C:
+        case ExecutableLanguage.C:
+        case ExecutableLanguage.CPP:
           result = this.runC();
           break;
-        case ExecutableFile.JAVA:
+        case ExecutableLanguage.JAVA:
           result = this.runJava();
           break;
-        case ExecutableFile.PYTHON2:
+        case ExecutableLanguage.PYTHON2:
           result = this.runPython2();
           break;
-        case ExecutableFile.PYTHON3:
+        case ExecutableLanguage.PYTHON:
+        case ExecutableLanguage.PYTHON3:
           result = this.runPython3();
           break;
-        case ExecutableFile.NODEJS:
+        case ExecutableLanguage.NODEJS:
+        case ExecutableLanguage.JAVASCRIPT:
           result = this.runNodeJs();
           break;
-        case ExecutableFile.TYPESCRIPT:
+        case ExecutableLanguage.TYPESCRIPT:
           result = this.runTypescript();
           break;
       }
     } catch (e) {
-      console.error('error', e);
+      return e;
     } finally {
       this.removeFile();
       return result;
     }
   }
 
-  private getExecute(type: ExecutableFile): string {
-    switch (type) {
-      case ExecutableFile.C:
-        return 'c';
-      case ExecutableFile.JAVA:
-        return 'java';
-      case ExecutableFile.PYTHON2:
-      case ExecutableFile.PYTHON3:
-        return 'py';
-      case ExecutableFile.NODEJS:
-        return 'js';
-      case ExecutableFile.TYPESCRIPT:
-        return 'ts';
-    }
-  }
-
   private runC() {
-    childProcess.execSync(`gcc -o ${this.executableFilePath} ${this.sourceFilePath}`);
-    const result = childProcess.execSync(`${this.executableFilePath}`);
+    childProcess.execSync(`gcc -o ${this.ExecutableLanguagePath} ${this.sourceFilePath}`);
+    const result = childProcess.execSync(`${this.ExecutableLanguagePath}`);
     return result.toString();
   }
 
   private runJava() {
     const filename = 'Main.java';
-    fs.mkdirSync(this.executableFilePath);
-    fs.copyFileSync(`${this.sourceFilePath}`, `${this.executableFilePath}/${filename}`);
-    childProcess.execSync(`javac ${this.executableFilePath}/${filename}`);
-    const files = fs.readdirSync(this.executableFilePath);
+    fs.mkdirSync(this.ExecutableLanguagePath);
+    fs.copyFileSync(`${this.sourceFilePath}`, `${this.ExecutableLanguagePath}/${filename}`);
+    childProcess.execSync(`javac ${this.ExecutableLanguagePath}/${filename}`);
+    const files = fs.readdirSync(this.ExecutableLanguagePath);
     const compiledFile = files.find(file => /\.class/.test(file) && file !== filename) || '';
-    const result = childProcess.execSync(`java -cp ${this.executableFilePath} ${compiledFile.split('.')[0]}`);
-    Executer.removeDir(this.executableFilePath);
+    const result = childProcess.execSync(`java -cp ${this.ExecutableLanguagePath} ${compiledFile.split('.')[0]}`);
+    Executer.removeDir(this.ExecutableLanguagePath);
     return result.toString();
   }
 
@@ -116,7 +143,7 @@ export class Executer {
   }
 
   private removeFile() {
-    this.removePath(this.executableFilePath);
+    this.removePath(this.ExecutableLanguagePath);
     this.removePath(this.sourceFilePath);
   }
 
