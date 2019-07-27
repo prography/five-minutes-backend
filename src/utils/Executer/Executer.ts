@@ -98,7 +98,7 @@ export class Executer {
           break;
       }
     } catch (e) {
-      throw e;
+      result = e;
     } finally {
       this.removeFile();
       return result;
